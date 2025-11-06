@@ -37,8 +37,10 @@ const Dashboard: React.FC = () => {
     try {
       setLoading(true);
       const result = await dashboardApi.getStats();
+      console.log('Dashboard data loaded:', result);
       setData(result);
     } catch (err: any) {
+      console.error('Dashboard error:', err);
       setError(err.response?.data?.message || 'Ошибка загрузки данных');
     } finally {
       setLoading(false);
@@ -49,10 +51,26 @@ const Dashboard: React.FC = () => {
     return <LoadingSpinner className="h-screen" />;
   }
 
-  if (error || !data) {
+  if (error) {
     return (
       <div className="text-center text-red-600 p-8">
-        <p>{error || 'Нет данных'}</p>
+        <h2 className="text-2xl font-bold mb-4">Ошибка загрузки данных</h2>
+        <p className="mb-4">{error}</p>
+        <button onClick={loadDashboardData} className="btn btn-primary">
+          Попробовать снова
+        </button>
+      </div>
+    );
+  }
+
+  if (!data || !data.stats) {
+    return (
+      <div className="text-center text-gray-600 p-8">
+        <h2 className="text-2xl font-bold mb-4">Нет данных</h2>
+        <p className="mb-4">Не удалось загрузить данные панели управления</p>
+        <button onClick={loadDashboardData} className="btn btn-primary">
+          Обновить
+        </button>
       </div>
     );
   }
