@@ -32,11 +32,11 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
         builder.HasOne(p => p.Contract)
             .WithMany(c => c.Payments)
             .HasForeignKey(p => p.ContractId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(p => p.InstallmentPlan)
             .WithOne(i => i.Payment)
             .HasForeignKey<Payment>(p => p.InstallmentPlanId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }
