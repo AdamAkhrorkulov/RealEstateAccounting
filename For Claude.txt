@@ -1,0 +1,150 @@
+---
+
+## 🏗️ **Project Plan: Real Estate Accounting & Automation Website**
+
+### **Goal**
+
+Develop a web-based accounting and automation system for managing apartment sales, contracts, and installment payments — with automated tracking, analytics, and reporting.
+
+---
+
+## **1. Project Scope**
+
+### **Core Objectives**
+
+* Centralize apartment, customer, and contract data.
+* Automate calculation of payments, balances, and remaining installments.
+* Generate reports and dashboards for administrators and accountants.
+* Provide user-friendly portals for customers, accountants, and agents.
+* Exclude payment gateway integration (manual payment tracking only).
+
+---
+
+## **2. Main Features**
+
+### **A. Apartment & Contract Management**
+
+* CRUD (Create, Read, Update, Delete) operations for apartments.
+* Contract creation with linked customer and apartment.
+* Auto-calculate total price, duration, and monthly payment.
+* Status tracking (active, completed, overdue).
+
+---
+
+### **B. Customer & Agent Management**
+
+* Store customer information (name, contact, passport, address).
+* Store agent details and commissions.
+* Link each customer to a contract and agent.
+* Agent performance dashboard (number of sales, commission earned).
+
+---
+
+### **C. Installment & Payment Tracking**
+
+* Automatic calculation of monthly installments.
+* Record manual payments (cash or bank).
+* Show paid vs unpaid months, and remaining balance.
+* Auto-detect overdue payments and highlight in dashboard.
+* Display complete payment history for each contract.
+
+---
+
+### **D. Dashboards & Analytics**
+
+* Overview of:
+
+  * Total apartments sold / available.
+  * Total amount received vs. pending.
+  * Monthly revenue trends.
+  * Overdue payments and top-performing agents.
+* Interactive charts (e.g., bar, line, pie charts).
+
+---
+
+### **E. Reports & Data Export**
+
+* Filterable reports by:
+
+  * Date range
+  * Agent
+  * Building/block
+  * Payment status
+* Export reports to Excel and PDF.
+* Generate tax or accounting summary reports.
+
+---
+
+### **F. Notifications & Alerts (Internal only)**
+
+* System reminders for overdue payments.
+* Dashboard indicators (e.g., red alerts for overdue customers).
+* Optional daily summary emails to admin (optional feature).
+
+---
+
+### **G. Role-Based Access Control**
+
+| Role           | Permissions                           |
+| -------------- | ------------------------------------- |
+| **Admin**      | Full access to all data and users     |
+| **Accountant** | Manage contracts, payments, reports   |
+| **Agent**      | Manage personal clients and contracts |
+| **Customer**   | View own payment status and contract  |
+
+---
+
+### **H. Customer Portal**
+
+* Customer login with secure access.
+* View contract details, payment schedule, and remaining balance.
+* View or download receipts and contract copies.
+* No online payment — only view and history.
+
+---
+
+## **3. Technical Architecture**
+follow Solid!
+### **Frontend**
+
+* **Framework:** React (with TypeScript)
+* **UI:** Tailwind CSS or Bootstrap
+* **Charts:** Recharts or Chart.js
+* **State management:** Redux Toolkit or Context API
+
+### **Backend**
+
+* **Framework:** ASP.NET Core Web API (.NET 8)
+* **Architecture:** Clean Architecture (Controllers → Services → Repository → EF Core)
+* **Authentication:** ASP.NET Identity + JWT Tokens
+* **Mapping:** AutoMapper
+* **Logging:** Serilog
+* **Database ORM:** Entity Framework Core
+
+### **Database**
+
+* **System:** Microsoft SQL Server
+* **Entities:**
+
+  * Apartments
+  * Customers
+  * Contracts
+  * Payments
+  * Agents
+  * InstallmentPlans
+
+---
+
+## **4. Project Phases**
+
+| Phase                           | Description                                                                          | Deliverables                       |
+| ------------------------------- | ------------------------------------------------------------------------------------ | ---------------------------------- |
+| **1. Requirements & Design      | Gather requirements, define data flow, prepare ERD and UI wireframes.                | Documentation, ER diagram, mockups |
+| **2. Backend Development        | Create API endpoints, implement business logic, database models, and authentication. | Fully functional API               |
+| **3. Frontend Development       | Build React interface, dashboards, and forms for CRUD and reports.                   | Frontend integrated with API       |
+| **4. Testing & QA               | Unit testing, integration testing, UI/UX testing.                                    | Bug-free, stable build             |
+| **5. Deployment & Documentation | Deploy to hosting or internal server, prepare user manual.                           | Live website + documentation       |
+
+
+---
+
