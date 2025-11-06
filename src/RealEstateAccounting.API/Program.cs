@@ -162,6 +162,13 @@ app.MapControllers();
 try
 {
     Log.Information("Starting Real Estate Accounting API");
+
+    // Seed the database with initial admin user
+    using (var scope = app.Services.CreateScope())
+    {
+        await RealEstateAccounting.Infrastructure.Data.DatabaseSeeder.SeedAsync(scope.ServiceProvider);
+    }
+
     app.Run();
 }
 catch (Exception ex)
