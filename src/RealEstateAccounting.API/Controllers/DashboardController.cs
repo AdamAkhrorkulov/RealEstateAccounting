@@ -19,7 +19,7 @@ public class DashboardController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet]
+    [HttpGet("stats")]
     public async Task<ActionResult<DashboardDto>> GetDashboard()
     {
         try
