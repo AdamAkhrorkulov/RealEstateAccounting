@@ -137,11 +137,16 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Real Estate Accounting API v1");
+    c.RoutePrefix = "swagger";
+    c.DocumentTitle = "Real Estate Accounting API";
+});
+
+// Redirect root to Swagger UI
+app.MapGet("/", () => Results.Redirect("/swagger")).ExcludeFromDescription();
 
 app.UseSerilogRequestLogging();
 
