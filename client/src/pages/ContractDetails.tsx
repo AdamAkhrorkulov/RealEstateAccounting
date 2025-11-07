@@ -239,7 +239,7 @@ const ContractDetails: React.FC = () => {
 
       {/* Action Buttons */}
       <div className="flex justify-end space-x-4">
-        <Link to="/payments" className="btn btn-primary">
+        <Link to={`/payments/new?contractId=${contract.id}`} className="btn btn-primary">
           Записать платеж
         </Link>
       </div>

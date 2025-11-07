@@ -11,6 +11,7 @@ import Contracts from './pages/Contracts';
 import ContractDetails from './pages/ContractDetails';
 import CreateContract from './pages/CreateContract';
 import Payments from './pages/Payments';
+import CreatePayment from './pages/CreatePayment';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 // Protected Route Component
@@ -125,6 +126,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Contracts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payments/new"
+        element={
+          <ProtectedRoute>
+            <CreatePayment />
           </ProtectedRoute>
         }
       />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Plus, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { paymentsApi } from '@/services/api';
 import type { PaymentDto } from '@/types';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
@@ -43,6 +44,10 @@ const Payments: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">Платежи</h1>
           <p className="text-gray-600 mt-2">История платежей</p>
         </div>
+        <Link to="/payments/new" className="btn btn-primary flex items-center space-x-2">
+          <Plus className="w-5 h-5" />
+          <span>Записать платеж</span>
+        </Link>
       </div>
 
       <div className="card">
