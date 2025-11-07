@@ -30,8 +30,14 @@ const Login: React.FC = () => {
 
     try {
       await login(formData);
-      navigate('/');
+      console.log('Login successful, navigating to dashboard...');
+
+      // Small delay to ensure React state updates propagate
+      setTimeout(() => {
+        navigate('/');
+      }, 100);
     } catch (err: any) {
+      console.error('Login failed:', err);
       setError(err.response?.data?.message || 'Неверный email или пароль');
     } finally {
       setLoading(false);

@@ -36,11 +36,14 @@ const Dashboard: React.FC = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
+      console.log('Dashboard: Fetching dashboard stats...');
+
       const result = await dashboardApi.getStats();
-      console.log('Dashboard data loaded:', result);
+      console.log('Dashboard: Data loaded successfully:', result);
       setData(result);
     } catch (err: any) {
-      console.error('Dashboard error:', err);
+      console.error('Dashboard: Error loading data:', err);
+      console.error('Dashboard: Error response:', err.response);
       setError(err.response?.data?.message || 'Ошибка загрузки данных');
     } finally {
       setLoading(false);

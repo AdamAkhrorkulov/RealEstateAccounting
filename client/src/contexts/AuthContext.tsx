@@ -30,15 +30,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const storedToken = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
 
+    console.log('AuthContext: Initializing...', {
+      hasToken: !!storedToken,
+      hasUser: !!storedUser,
+    });
+
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        setToken(storedToken);
+        setUser(parsedUser);
+        console.log('AuthContext: User restored from localStorage', parsedUser);
+      } catch (error) {
+        console.error('AuthContext: Failed to parse stored user', error);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+      }
     }
     setLoading(false);
   }, []);
 
   const login = async (credentials: LoginDto) => {
     try {
+      console.log('AuthContext: Attempting login...');
       const response: AuthResponse = await authApi.login(credentials);
 
       const userData: User = {
@@ -47,18 +61,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         role: response.role,
       };
 
+      console.log('AuthContext: Login successful, setting user and token', {
+        user: userData,
+        tokenLength: response.token.length,
+      });
+
       setToken(response.token);
       setUser(userData);
 
       localStorage.setItem('token', response.token);
       localStorage.setItem('user', JSON.stringify(userData));
+
+      console.log('AuthContext: User and token saved to localStorage');
     } catch (error) {
-      console.error('Login error:', error);
+      console.error('AuthContext: Login error:', error);
       throw error;
     }
   };
 
   const logout = () => {
+    console.log('AuthContext: Logging out user');
     setUser(null);
     setToken(null);
     localStorage.removeItem('token');
