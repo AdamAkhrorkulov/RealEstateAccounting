@@ -33,6 +33,9 @@ api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url} (with auth token)`);
+  } else {
+    console.log(`API Request: ${config.method?.toUpperCase()} ${config.url} (no auth token)`);
   }
   return config;
 });
@@ -42,9 +45,24 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      const isLoginRequest = error.config?.url?.includes('/Auth/login');
+      const currentPath = window.location.pathname;
+
+      // Don't clear tokens or redirect if:
+      // 1. This is a login request (let login page handle the error)
+      // 2. We're already on the login page (prevent redirect loop)
+      if (!isLoginRequest && currentPath !== '/login') {
+        console.log('401 Unauthorized - clearing tokens and redirecting to login');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+
+        // Use setTimeout to avoid redirect during React rendering
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 0);
+      } else {
+        console.log('401 on login page or login request - not redirecting');
+      }
     }
     return Promise.reject(error);
   }

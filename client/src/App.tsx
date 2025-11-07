@@ -14,16 +14,26 @@ import LoadingSpinner from './components/common/LoadingSpinner';
 
 // Protected Route Component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user, token } = useAuth();
+
+  console.log('ProtectedRoute: Checking auth', {
+    isAuthenticated,
+    loading,
+    hasUser: !!user,
+    hasToken: !!token,
+  });
 
   if (loading) {
+    console.log('ProtectedRoute: Still loading, showing spinner');
     return <LoadingSpinner className="h-screen" />;
   }
 
   if (!isAuthenticated) {
+    console.log('ProtectedRoute: Not authenticated, redirecting to login');
     return <Navigate to="/login" replace />;
   }
 
+  console.log('ProtectedRoute: Authenticated, rendering protected content');
   return <Layout>{children}</Layout>;
 };
 
@@ -31,14 +41,19 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
+  console.log('PublicRoute: Checking auth', { isAuthenticated, loading });
+
   if (loading) {
+    console.log('PublicRoute: Still loading, showing spinner');
     return <LoadingSpinner className="h-screen" />;
   }
 
   if (isAuthenticated) {
+    console.log('PublicRoute: Already authenticated, redirecting to dashboard');
     return <Navigate to="/" replace />;
   }
 
+  console.log('PublicRoute: Not authenticated, showing public content');
   return <>{children}</>;
 };
 
