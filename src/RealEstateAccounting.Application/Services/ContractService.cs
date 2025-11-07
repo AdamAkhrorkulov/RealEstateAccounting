@@ -182,7 +182,7 @@ public class ContractService : IContractService
         {
             var installmentPlan = new InstallmentPlan
             {
-                ContractId = contract.Id,
+                Contract = contract,
                 MonthNumber = month,
                 DueDate = currentDate,
                 ScheduledAmount = contract.MonthlyPayment,
