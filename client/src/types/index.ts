@@ -62,6 +62,7 @@ export interface UserDto {
 // Apartment Types
 export interface ApartmentDto {
   id: number;
+  apartmentNumber: string;     // Номер квартиры
   block: string;               // Блок
   entrance: number;            // Подъезд
   floor: number;               // Этаж
@@ -75,6 +76,7 @@ export interface ApartmentDto {
 }
 
 export interface CreateApartmentDto {
+  apartmentNumber: string;
   block: string;
   entrance: number;
   floor: number;

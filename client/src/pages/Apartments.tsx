@@ -14,6 +14,7 @@ const Apartments: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState<CreateApartmentDto>({
+    apartmentNumber: '',
     block: '',
     entrance: 1,
     floor: 1,
@@ -50,6 +51,7 @@ const Apartments: React.FC = () => {
 
     const filtered = apartments.filter(
       (apt) =>
+        apt.apartmentNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.block.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.entrance.toString().includes(searchTerm) ||
         apt.floor.toString().includes(searchTerm)
@@ -61,6 +63,7 @@ const Apartments: React.FC = () => {
     if (apartment) {
       setEditingId(apartment.id);
       setFormData({
+        apartmentNumber: apartment.apartmentNumber,
         block: apartment.block,
         entrance: apartment.entrance,
         floor: apartment.floor,
@@ -71,6 +74,7 @@ const Apartments: React.FC = () => {
     } else {
       setEditingId(null);
       setFormData({
+        apartmentNumber: '',
         block: '',
         entrance: 1,
         floor: 1,
@@ -139,7 +143,7 @@ const Apartments: React.FC = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
-            placeholder="Поиск по блоку, подъезду, этажу..."
+            placeholder="Поиск по номеру, блоку, подъезду, этажу..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="input pl-9 text-sm"
@@ -153,6 +157,7 @@ const Apartments: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">№ Кв.</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Блок</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Подъезд</th>
                 <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Этаж</th>
@@ -167,7 +172,8 @@ const Apartments: React.FC = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredApartments.map((apartment) => (
                 <tr key={apartment.id} className="hover:bg-gray-50">
-                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{apartment.block}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{apartment.apartmentNumber}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{apartment.block}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{apartment.entrance}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{apartment.floor}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{apartment.roomCount}</td>
@@ -219,6 +225,19 @@ const Apartments: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Номер квартиры *
+              </label>
+              <input
+                type="text"
+                value={formData.apartmentNumber}
+                onChange={(e) => setFormData({ ...formData, apartmentNumber: e.target.value })}
+                className="input"
+                required
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Блок *
