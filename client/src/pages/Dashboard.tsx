@@ -112,25 +112,25 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Панель управления</h1>
-        <p className="text-gray-600 mt-2">Обзор статистики и аналитики</p>
+        <h1 className="text-2xl font-bold text-gray-900">Панель управления</h1>
+        <p className="text-sm text-gray-600 mt-1">Обзор статистики и аналитики</p>
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         {statCards.map((card, index) => (
-          <div key={index} className="card p-6">
+          <div key={index} className="card p-4">
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600">{card.title}</p>
-                <p className="text-2xl font-bold text-gray-900 mt-2">{card.value}</p>
-                <p className="text-xs text-gray-500 mt-2">{card.subtitle}</p>
+                <p className="text-xs font-medium text-gray-600">{card.title}</p>
+                <p className="text-xl font-bold text-gray-900 mt-1">{card.value}</p>
+                <p className="text-xs text-gray-500 mt-1">{card.subtitle}</p>
               </div>
-              <div className={`${card.color} p-3 rounded-lg`}>
-                <card.icon className="w-6 h-6 text-white" />
+              <div className={`${card.color} p-2 rounded-lg`}>
+                <card.icon className="w-5 h-5 text-white" />
               </div>
             </div>
           </div>
@@ -138,17 +138,17 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
         {/* Revenue Chart */}
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Динамика доходов</h2>
-          <ResponsiveContainer width="100%" height={300}>
+        <div className="card p-4">
+          <h2 className="text-base font-semibold text-gray-900 mb-3">Динамика доходов</h2>
+          <ResponsiveContainer width="100%" height={250}>
             <LineChart data={revenueData}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
+              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} />
               <Tooltip formatter={(value: number) => formatCurrency(value)} />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: '12px' }} />
               <Line
                 type="monotone"
                 dataKey="revenue"
@@ -161,15 +161,15 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Top Agents */}
-        <div className="card p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Топ агенты</h2>
-          <ResponsiveContainer width="100%" height={300}>
+        <div className="card p-4">
+          <h2 className="text-base font-semibold text-gray-900 mb-3">Топ агенты</h2>
+          <ResponsiveContainer width="100%" height={250}>
             <BarChart data={topAgents}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="agentName" />
-              <YAxis />
+              <XAxis dataKey="agentName" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} />
               <Tooltip formatter={(value: number) => formatCurrency(value)} />
-              <Legend />
+              <Legend wrapperStyle={{ fontSize: '12px' }} />
               <Bar dataKey="totalCommission" name="Комиссия" fill="#10b981" />
             </BarChart>
           </ResponsiveContainer>
@@ -177,39 +177,39 @@ const Dashboard: React.FC = () => {
       </div>
 
       {/* Additional Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="card p-6">
-          <div className="flex items-center space-x-4">
-            <div className="bg-blue-100 p-3 rounded-lg">
-              <Users className="w-6 h-6 text-blue-600" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="card p-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-blue-100 p-2 rounded-lg">
+              <Users className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Всего клиентов</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalCustomers}</p>
+              <p className="text-xs text-gray-600">Всего клиентов</p>
+              <p className="text-lg font-bold text-gray-900">{stats.totalCustomers}</p>
             </div>
           </div>
         </div>
 
-        <div className="card p-6">
-          <div className="flex items-center space-x-4">
-            <div className="bg-purple-100 p-3 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-purple-600" />
+        <div className="card p-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-purple-100 p-2 rounded-lg">
+              <TrendingUp className="w-5 h-5 text-purple-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Всего агентов</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.totalAgents}</p>
+              <p className="text-xs text-gray-600">Всего агентов</p>
+              <p className="text-lg font-bold text-gray-900">{stats.totalAgents}</p>
             </div>
           </div>
         </div>
 
-        <div className="card p-6">
-          <div className="flex items-center space-x-4">
-            <div className="bg-green-100 p-3 rounded-lg">
-              <DollarSign className="w-6 h-6 text-green-600" />
+        <div className="card p-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-green-100 p-2 rounded-lg">
+              <DollarSign className="w-5 h-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-600">Ожидается платежей</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-xs text-gray-600">Ожидается платежей</p>
+              <p className="text-lg font-bold text-gray-900">
                 {formatCurrency(stats.pendingRevenue)}
               </p>
             </div>
