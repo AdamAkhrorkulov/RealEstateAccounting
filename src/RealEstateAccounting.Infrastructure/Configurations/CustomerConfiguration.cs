@@ -16,6 +16,26 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(c => c.PassportSeries)
+            .IsRequired()
+            .HasMaxLength(2);
+
+        builder.Property(c => c.PassportNumber)
+            .IsRequired()
+            .HasMaxLength(10);
+
+        builder.Property(c => c.PassportIssueDate)
+            .IsRequired()
+            .HasMaxLength(20);
+
+        builder.Property(c => c.PassportIssuedBy)
+            .IsRequired()
+            .HasMaxLength(200);
+
+        builder.Property(c => c.RegistrationAddress)
+            .IsRequired()
+            .HasMaxLength(500);
+
         builder.Property(c => c.PhoneNumber)
             .IsRequired()
             .HasMaxLength(20);
@@ -23,20 +43,8 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.Email)
             .HasMaxLength(100);
 
-        builder.Property(c => c.PassportNumber)
-            .IsRequired()
-            .HasMaxLength(50);
-
-        builder.Property(c => c.PassportIssuedBy)
-            .HasMaxLength(200);
-
-        builder.Property(c => c.Address)
-            .HasMaxLength(500);
-
-        builder.Property(c => c.AdditionalContacts)
-            .HasMaxLength(500);
-
-        builder.HasIndex(c => c.PassportNumber)
+        // Composite unique index for passport series + number
+        builder.HasIndex(c => new { c.PassportSeries, c.PassportNumber })
             .IsUnique();
 
         builder.HasIndex(c => c.PhoneNumber);
