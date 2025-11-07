@@ -2,16 +2,33 @@ namespace RealEstateAccounting.Application.DTOs;
 
 public class DashboardDto
 {
-    public int TotalApartments { get; set; }
-    public int ApartmentsSold { get; set; }
-    public int ApartmentsAvailable { get; set; }
-    public decimal TotalRevenue { get; set; }
-    public decimal TotalPending { get; set; }
-    public decimal MonthlyRevenue { get; set; }
-    public int OverdueContracts { get; set; }
+    public DashboardStatsDto Stats { get; set; } = new();
+    public List<RevenueDataDto> RevenueData { get; set; } = new();
     public List<AgentPerformanceDto> TopAgents { get; set; } = new();
-    public List<MonthlyRevenueDto> MonthlyTrends { get; set; } = new();
-    public List<ContractDto> RecentContracts { get; set; } = new();
+}
+
+public class DashboardStatsDto
+{
+    public int TotalApartments { get; set; }
+    public int AvailableApartments { get; set; }
+    public int SoldApartments { get; set; }
+    public int ReservedApartments { get; set; }
+    public decimal TotalRevenue { get; set; }
+    public decimal ReceivedRevenue { get; set; }
+    public decimal PendingRevenue { get; set; }
+    public decimal OverdueAmount { get; set; }
+    public int ActiveContracts { get; set; }
+    public int CompletedContracts { get; set; }
+    public int OverdueContracts { get; set; }
+    public int TotalCustomers { get; set; }
+    public int TotalAgents { get; set; }
+}
+
+public class RevenueDataDto
+{
+    public string Month { get; set; } = string.Empty;
+    public decimal Revenue { get; set; }
+    public int Payments { get; set; }
 }
 
 public class MonthlyRevenueDto
