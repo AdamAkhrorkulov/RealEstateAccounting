@@ -12,6 +12,15 @@ public class ContractRepository : GenericRepository<Contract>, IContractReposito
     {
     }
 
+    public override async Task<IEnumerable<Contract>> GetAllAsync()
+    {
+        return await _dbSet
+            .Include(c => c.Customer)
+            .Include(c => c.Apartment)
+            .Include(c => c.Agent)
+            .ToListAsync();
+    }
+
     public async Task<Contract?> GetContractWithDetailsAsync(int id)
     {
         return await _dbSet

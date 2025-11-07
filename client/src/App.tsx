@@ -8,6 +8,7 @@ import Apartments from './pages/Apartments';
 import Customers from './pages/Customers';
 import Agents from './pages/Agents';
 import Contracts from './pages/Contracts';
+import ContractDetails from './pages/ContractDetails';
 import CreateContract from './pages/CreateContract';
 import Payments from './pages/Payments';
 import LoadingSpinner from './components/common/LoadingSpinner';
@@ -108,6 +109,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <CreateContract />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/contracts/:id"
+        element={
+          <ProtectedRoute>
+            <ContractDetails />
           </ProtectedRoute>
         }
       />
