@@ -183,6 +183,12 @@ const ContractDetails: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900">Квартира</h2>
           </div>
           <div className="space-y-3">
+            {contract.apartment && (
+              <div className="flex justify-between py-2 border-b">
+                <span className="text-gray-600">Номер квартиры:</span>
+                <span className="font-medium">{contract.apartment.apartmentNumber}</span>
+              </div>
+            )}
             <div className="flex justify-between py-2 border-b">
               <span className="text-gray-600">Описание:</span>
               <span className="font-medium">{contract.apartmentInfo || 'Не указано'}</span>

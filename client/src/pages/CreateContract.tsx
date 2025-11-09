@@ -235,7 +235,7 @@ const CreateContract: React.FC = () => {
                 <option value={0}>Выберите квартиру</option>
                 {apartments.map((apt) => (
                   <option key={apt.id} value={apt.id}>
-                    Блок {apt.block}, Подъезд {apt.entrance}, Этаж {apt.floor} -{' '}
+                    № {apt.apartmentNumber} - Блок {apt.block}, Подъезд {apt.entrance}, Этаж {apt.floor} -{' '}
                     {apt.roomCount}-комн. ({apt.area} м²) - {formatCurrency(apt.totalPrice)}
                   </option>
                 ))}
@@ -331,7 +331,7 @@ const CreateContract: React.FC = () => {
                 <div>
                   <p className="text-sm text-gray-600">Квартира:</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    Блок {selectedApartment.block}, Подъезд {selectedApartment.entrance}, Этаж{' '}
+                    № {selectedApartment.apartmentNumber} - Блок {selectedApartment.block}, Подъезд {selectedApartment.entrance}, Этаж{' '}
                     {selectedApartment.floor}
                   </p>
                   <p className="text-sm text-gray-600">
