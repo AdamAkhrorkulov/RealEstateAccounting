@@ -56,6 +56,12 @@ public class PaymentService : IPaymentService
         return _mapper.Map<PaymentDto>(payment);
     }
 
+    public async Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync()
+    {
+        var payments = await _unitOfWork.Payments.GetAllAsync();
+        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+    }
+
     public async Task<IEnumerable<PaymentDto>> GetPaymentsByContractAsync(int contractId)
     {
         var payments = await _unitOfWork.Payments.GetPaymentsByContractAsync(contractId);

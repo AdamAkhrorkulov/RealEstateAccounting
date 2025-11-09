@@ -55,7 +55,9 @@ public class MappingProfile : Profile
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
         // Payment mappings
-        CreateMap<Payment, PaymentDto>();
+        CreateMap<Payment, PaymentDto>()
+            .ForMember(dest => dest.ContractNumber, opt => opt.MapFrom(src => src.Contract != null ? src.Contract.ContractNumber : string.Empty))
+            .ForMember(dest => dest.RecordedByUserName, opt => opt.MapFrom(src => src.RecordedByUserId));
         CreateMap<CreatePaymentDto, Payment>()
             .ForMember(dest => dest.IsPaid, opt => opt.MapFrom(src => true));
 

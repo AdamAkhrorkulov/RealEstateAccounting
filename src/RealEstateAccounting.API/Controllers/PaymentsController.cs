@@ -20,6 +20,21 @@ public class PaymentsController : ControllerBase
         _logger = logger;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<PaymentDto>>> GetAll()
+    {
+        try
+        {
+            var payments = await _paymentService.GetAllPaymentsAsync();
+            return Ok(payments);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving all payments");
+            return StatusCode(500, new { message = "An error occurred while retrieving payments" });
+        }
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<PaymentDto>> GetById(int id)
     {
