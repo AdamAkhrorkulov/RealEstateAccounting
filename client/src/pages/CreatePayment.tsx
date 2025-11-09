@@ -22,6 +22,7 @@ const CreatePayment: React.FC = () => {
   });
 
   const [contract, setContract] = useState<ContractDto | null>(null);
+  const [contracts, setContracts] = useState<ContractDto[]>([]);
   const [loading, setLoading] = useState(false);
   const [contractLoading, setContractLoading] = useState(false);
   const [error, setError] = useState('');
@@ -29,8 +30,23 @@ const CreatePayment: React.FC = () => {
   useEffect(() => {
     if (contractId) {
       loadContract(parseInt(contractId));
+    } else {
+      loadContracts();
     }
   }, [contractId]);
+
+  const loadContracts = async () => {
+    try {
+      setContractLoading(true);
+      const data = await contractsApi.getAll();
+      setContracts(data);
+    } catch (err) {
+      console.error('Error loading contracts:', err);
+      setError('Не удалось загрузить список договоров');
+    } finally {
+      setContractLoading(false);
+    }
+  };
 
   const loadContract = async (id: number) => {
     try {
@@ -163,24 +179,37 @@ const CreatePayment: React.FC = () => {
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="card p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Contract ID (hidden if pre-selected) */}
+          {/* Contract Selection (hidden if pre-selected) */}
           {!contractId && (
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                ID Договора *
+                Договор *
               </label>
-              <input
-                type="number"
+              <select
                 name="contractId"
-                value={formData.contractId || ''}
-                onChange={handleChange}
+                value={formData.contractId || 0}
+                onChange={(e) => {
+                  const selectedId = Number(e.target.value);
+                  setFormData({ ...formData, contractId: selectedId });
+                  if (selectedId > 0) {
+                    loadContract(selectedId);
+                  }
+                }}
                 required
                 className="input"
-                placeholder="Введите ID договора"
-              />
-              <p className="text-sm text-gray-500 mt-1">
-                Если вы не знаете ID, перейдите к списку договоров и выберите договор
-              </p>
+              >
+                <option value={0}>Выберите договор</option>
+                {contracts.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    № {c.contractNumber} - {c.customerName} - Остаток: {formatCurrency(c.remainingBalance)}
+                  </option>
+                ))}
+              </select>
+              {contracts.length === 0 && (
+                <p className="text-sm text-orange-600 mt-1">
+                  Нет активных договоров
+                </p>
+              )}
             </div>
           )}
 
