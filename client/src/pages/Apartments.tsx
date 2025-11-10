@@ -300,11 +300,12 @@ const Apartments: React.FC = () => {
               <input
                 type="number"
                 step="0.1"
-                value={formData.area}
-                onChange={(e) => setFormData({ ...formData, area: Number(e.target.value) })}
+                value={formData.area || ''}
+                onChange={(e) => setFormData({ ...formData, area: Number(e.target.value) || 0 })}
                 className="input"
                 min="0"
                 required
+                placeholder="0"
               />
             </div>
 
@@ -314,13 +315,14 @@ const Apartments: React.FC = () => {
               </label>
               <input
                 type="number"
-                value={formData.pricePerSquareMeter}
+                value={formData.pricePerSquareMeter || ''}
                 onChange={(e) =>
-                  setFormData({ ...formData, pricePerSquareMeter: Number(e.target.value) })
+                  setFormData({ ...formData, pricePerSquareMeter: Number(e.target.value) || 0 })
                 }
                 className="input"
                 min="0"
                 required
+                placeholder="0"
               />
             </div>
           </div>

@@ -173,12 +173,13 @@ const Agents: React.FC = () => {
             <input
               type="number"
               step="0.1"
-              value={formData.commissionPercentage}
-              onChange={(e) => setFormData({ ...formData, commissionPercentage: Number(e.target.value) })}
+              value={formData.commissionPercentage || ''}
+              onChange={(e) => setFormData({ ...formData, commissionPercentage: Number(e.target.value) || 0 })}
               className="input"
               min="0"
               max="100"
               required
+              placeholder="0"
             />
           </div>
 

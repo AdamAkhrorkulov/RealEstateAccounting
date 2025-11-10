@@ -281,17 +281,18 @@ const CreateContract: React.FC = () => {
               </label>
               <input
                 type="number"
-                value={formData.downPayment}
+                value={formData.downPayment || ''}
                 onChange={(e) =>
-                  setFormData({ ...formData, downPayment: Number(e.target.value) })
+                  setFormData({ ...formData, downPayment: Number(e.target.value) || 0 })
                 }
                 className="input"
                 min="0"
                 max={totalAmount}
                 required
+                placeholder="0"
               />
               <p className="text-xs text-gray-500 mt-1">
-                {totalAmount > 0 &&
+                {totalAmount > 0 && formData.downPayment > 0 &&
                   `${((formData.downPayment / totalAmount) * 100).toFixed(1)}% от общей суммы`}
               </p>
             </div>
