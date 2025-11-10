@@ -225,6 +225,7 @@ const CreatePayment: React.FC = () => {
               onChange={handleChange}
               required
               className="input"
+              placeholder="yyyy/MM/dd"
             />
           </div>
 

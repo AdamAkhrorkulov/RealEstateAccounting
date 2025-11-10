@@ -235,6 +235,7 @@ const Customers: React.FC = () => {
                 value={formData.passportIssueDate}
                 onChange={(e) => setFormData({ ...formData, passportIssueDate: e.target.value })}
                 className="input"
+                placeholder="yyyy/MM/dd"
                 required
               />
             </div>
