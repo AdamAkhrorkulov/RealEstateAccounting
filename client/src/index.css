@@ -48,29 +48,6 @@
     -moz-appearance: textfield;
   }
 
-  /* Style date inputs to show format hint */
-  input[type='date'] {
-    position: relative;
-  }
-
-  input[type='date']::-webkit-calendar-picker-indicator {
-    cursor: pointer;
-  }
-
-  /* Add format hint for empty date inputs */
-  input[type='date']:not(:focus):invalid {
-    color: transparent;
-  }
-
-  input[type='date']:not(:focus):invalid::-webkit-datetime-edit {
-    color: transparent;
-  }
-
-  input[type='date']:not(:focus):invalid::before {
-    content: attr(placeholder);
-    color: #9ca3af;
-  }
-
   .card {
     @apply bg-white rounded-lg shadow-sm border border-gray-200;
   }

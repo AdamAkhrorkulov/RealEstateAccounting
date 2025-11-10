@@ -188,7 +188,6 @@ const CreateContract: React.FC = () => {
                   setFormData({ ...formData, contractDate: e.target.value })
                 }
                 className="input"
-                placeholder="yyyy/MM/dd"
                 required
               />
             </div>
