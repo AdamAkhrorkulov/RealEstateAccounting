@@ -16,11 +16,11 @@ const Apartments: React.FC = () => {
   const [formData, setFormData] = useState<CreateApartmentDto>({
     apartmentNumber: '',
     block: '',
-    entrance: 1,
-    floor: 1,
-    roomCount: 1,
-    area: 0,
-    pricePerSquareMeter: 0,
+    entrance: '' as any,
+    floor: '' as any,
+    roomCount: '' as any,
+    area: '' as any,
+    pricePerSquareMeter: '' as any,
   });
 
   useEffect(() => {
@@ -76,11 +76,11 @@ const Apartments: React.FC = () => {
       setFormData({
         apartmentNumber: '',
         block: '',
-        entrance: 1,
-        floor: 1,
-        roomCount: 1,
-        area: 0,
-        pricePerSquareMeter: 0,
+        entrance: '' as any,
+        floor: '' as any,
+        roomCount: '' as any,
+        area: '' as any,
+        pricePerSquareMeter: '' as any,
       });
     }
     setIsModalOpen(true);
@@ -258,7 +258,7 @@ const Apartments: React.FC = () => {
               <input
                 type="number"
                 value={formData.entrance}
-                onChange={(e) => setFormData({ ...formData, entrance: Number(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, entrance: Number(e.target.value) || '' as any })}
                 className="input"
                 min="1"
                 required
@@ -272,7 +272,7 @@ const Apartments: React.FC = () => {
               <input
                 type="number"
                 value={formData.floor}
-                onChange={(e) => setFormData({ ...formData, floor: Number(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, floor: Number(e.target.value) || '' as any })}
                 className="input"
                 min="1"
                 required
@@ -286,7 +286,7 @@ const Apartments: React.FC = () => {
               <input
                 type="number"
                 value={formData.roomCount}
-                onChange={(e) => setFormData({ ...formData, roomCount: Number(e.target.value) })}
+                onChange={(e) => setFormData({ ...formData, roomCount: Number(e.target.value) || '' as any })}
                 className="input"
                 min="1"
                 required
@@ -300,12 +300,11 @@ const Apartments: React.FC = () => {
               <input
                 type="number"
                 step="0.1"
-                value={formData.area || ''}
-                onChange={(e) => setFormData({ ...formData, area: Number(e.target.value) || 0 })}
+                value={formData.area}
+                onChange={(e) => setFormData({ ...formData, area: Number(e.target.value) || '' as any })}
                 className="input"
                 min="0"
                 required
-                placeholder="0"
               />
             </div>
 
@@ -315,14 +314,13 @@ const Apartments: React.FC = () => {
               </label>
               <input
                 type="number"
-                value={formData.pricePerSquareMeter || ''}
+                value={formData.pricePerSquareMeter}
                 onChange={(e) =>
-                  setFormData({ ...formData, pricePerSquareMeter: Number(e.target.value) || 0 })
+                  setFormData({ ...formData, pricePerSquareMeter: Number(e.target.value) || '' as any })
                 }
                 className="input"
                 min="0"
                 required
-                placeholder="0"
               />
             </div>
           </div>

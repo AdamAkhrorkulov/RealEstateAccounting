@@ -209,10 +209,14 @@ const Customers: React.FC = () => {
               <input
                 type="text"
                 value={formData.passportSeries}
-                onChange={(e) => setFormData({ ...formData, passportSeries: e.target.value.toUpperCase() })}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+                  setFormData({ ...formData, passportSeries: value });
+                }}
                 className="input"
                 maxLength={2}
                 required
+                placeholder="AA"
               />
             </div>
 
@@ -221,10 +225,14 @@ const Customers: React.FC = () => {
               <input
                 type="text"
                 value={formData.passportNumber}
-                onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData({ ...formData, passportNumber: value });
+                }}
                 className="input"
                 maxLength={7}
                 required
+                placeholder="1234567"
               />
             </div>
 
