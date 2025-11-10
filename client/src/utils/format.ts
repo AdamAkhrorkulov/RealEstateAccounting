@@ -14,7 +14,7 @@ export const formatCurrency = (amount: number): string => {
 // Format date
 export const formatDate = (dateString: string): string => {
   try {
-    return format(parseISO(dateString), 'dd.MM.yyyy', { locale: ru });
+    return format(parseISO(dateString), 'yyyy/MM/dd', { locale: ru });
   } catch {
     return dateString;
   }
@@ -23,7 +23,7 @@ export const formatDate = (dateString: string): string => {
 // Format datetime
 export const formatDateTime = (dateString: string): string => {
   try {
-    return format(parseISO(dateString), 'dd.MM.yyyy HH:mm', { locale: ru });
+    return format(parseISO(dateString), 'yyyy/MM/dd HH:mm', { locale: ru });
   } catch {
     return dateString;
   }
