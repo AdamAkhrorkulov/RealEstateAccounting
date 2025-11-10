@@ -18,6 +18,7 @@ public class ContractRepository : GenericRepository<Contract>, IContractReposito
             .Include(c => c.Customer)
             .Include(c => c.Apartment)
             .Include(c => c.Agent)
+            .Include(c => c.Payments)
             .ToListAsync();
     }
 
@@ -37,6 +38,7 @@ public class ContractRepository : GenericRepository<Contract>, IContractReposito
         return await _dbSet
             .Include(c => c.Apartment)
             .Include(c => c.Agent)
+            .Include(c => c.Payments)
             .Where(c => c.CustomerId == customerId)
             .ToListAsync();
     }
@@ -46,6 +48,7 @@ public class ContractRepository : GenericRepository<Contract>, IContractReposito
         return await _dbSet
             .Include(c => c.Customer)
             .Include(c => c.Apartment)
+            .Include(c => c.Payments)
             .Where(c => c.AgentId == agentId)
             .ToListAsync();
     }
@@ -55,6 +58,7 @@ public class ContractRepository : GenericRepository<Contract>, IContractReposito
         return await _dbSet
             .Include(c => c.Customer)
             .Include(c => c.Apartment)
+            .Include(c => c.Payments)
             .Where(c => c.Status == status)
             .ToListAsync();
     }
@@ -64,6 +68,7 @@ public class ContractRepository : GenericRepository<Contract>, IContractReposito
         return await _dbSet
             .Include(c => c.Customer)
             .Include(c => c.Apartment)
+            .Include(c => c.Payments)
             .Include(c => c.InstallmentPlans)
             .Where(c => c.Status == ContractStatus.Active &&
                        c.InstallmentPlans.Any(ip => !ip.IsPaid && ip.DueDate < DateTime.UtcNow))
@@ -76,6 +81,7 @@ public class ContractRepository : GenericRepository<Contract>, IContractReposito
             .Include(c => c.Customer)
             .Include(c => c.Apartment)
             .Include(c => c.Agent)
+            .Include(c => c.Payments)
             .FirstOrDefaultAsync(c => c.ContractNumber == contractNumber);
     }
 }

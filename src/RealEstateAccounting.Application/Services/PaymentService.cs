@@ -34,10 +34,23 @@ public class PaymentService : IPaymentService
         payment.RecordedByUserId = userId;
 
         await _unitOfWork.Payments.AddAsync(payment);
+        await _unitOfWork.SaveChangesAsync(); // Save to get the payment ID
 
-        // If linked to installment plan, mark it as paid
-        if (dto.InstallmentPlanId.HasValue)
+        // If no installment plan specified, automatically link to next unpaid plan
+        if (!dto.InstallmentPlanId.HasValue)
         {
+            var unpaidPlans = await _unitOfWork.InstallmentPlans.GetUnpaidPlansAsync(dto.ContractId);
+            var nextUnpaidPlan = unpaidPlans.OrderBy(p => p.MonthNumber).FirstOrDefault();
+
+            if (nextUnpaidPlan != null)
+            {
+                payment.InstallmentPlanId = nextUnpaidPlan.Id;
+                await _unitOfWork.InstallmentPlans.MarkAsPaidAsync(nextUnpaidPlan.Id, payment.Id);
+            }
+        }
+        else
+        {
+            // If linked to specific installment plan, mark it as paid
             await _unitOfWork.InstallmentPlans.MarkAsPaidAsync(dto.InstallmentPlanId.Value, payment.Id);
         }
 
