@@ -1,11 +1,9 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using RealEstateAccounting.Application.DTOs;
 using RealEstateAccounting.Application.Interfaces;
 using RealEstateAccounting.Domain.Entities;
 using RealEstateAccounting.Domain.Enums;
 using RealEstateAccounting.Domain.Interfaces;
-using RealEstateAccounting.Infrastructure.Identity;
 
 namespace RealEstateAccounting.Application.Services;
 
@@ -14,14 +12,14 @@ public class PaymentService : IPaymentService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IContractService _contractService;
-    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IUserService _userService;
 
-    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IContractService contractService, UserManager<ApplicationUser> userManager)
+    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IContractService contractService, IUserService userService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _contractService = contractService;
-        _userManager = userManager;
+        _userService = userService;
     }
 
     public async Task<PaymentDto> CreatePaymentAsync(CreatePaymentDto dto, string userId)
@@ -68,11 +66,7 @@ public class PaymentService : IPaymentService
         // Fetch and populate user names
         foreach (var dto in paymentDtos)
         {
-            if (!string.IsNullOrEmpty(dto.RecordedByUserId))
-            {
-                var user = await _userManager.FindByIdAsync(dto.RecordedByUserId);
-                dto.RecordedByUserName = user?.FullName ?? "Unknown";
-            }
+            dto.RecordedByUserName = await _userService.GetUserFullNameAsync(dto.RecordedByUserId);
         }
 
         return paymentDtos;
@@ -86,11 +80,7 @@ public class PaymentService : IPaymentService
         // Fetch and populate user names
         foreach (var dto in paymentDtos)
         {
-            if (!string.IsNullOrEmpty(dto.RecordedByUserId))
-            {
-                var user = await _userManager.FindByIdAsync(dto.RecordedByUserId);
-                dto.RecordedByUserName = user?.FullName ?? "Unknown";
-            }
+            dto.RecordedByUserName = await _userService.GetUserFullNameAsync(dto.RecordedByUserId);
         }
 
         return paymentDtos;
@@ -114,11 +104,7 @@ public class PaymentService : IPaymentService
         // Fetch and populate user names
         foreach (var dto in paymentDtos)
         {
-            if (!string.IsNullOrEmpty(dto.RecordedByUserId))
-            {
-                var user = await _userManager.FindByIdAsync(dto.RecordedByUserId);
-                dto.RecordedByUserName = user?.FullName ?? "Unknown";
-            }
+            dto.RecordedByUserName = await _userService.GetUserFullNameAsync(dto.RecordedByUserId);
         }
 
         return new PaymentReportDto
