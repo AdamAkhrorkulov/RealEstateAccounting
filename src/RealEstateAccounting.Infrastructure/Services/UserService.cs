@@ -19,6 +19,20 @@ public class UserService : IUserService
             return "Unknown";
 
         var user = await _userManager.FindByIdAsync(userId);
-        return user?.FullName ?? "Unknown";
+
+        if (user == null)
+            return "Unknown";
+
+        // Return FullName if available, otherwise return UserName, otherwise Email
+        if (!string.IsNullOrEmpty(user.FullName))
+            return user.FullName;
+
+        if (!string.IsNullOrEmpty(user.UserName))
+            return user.UserName;
+
+        if (!string.IsNullOrEmpty(user.Email))
+            return user.Email;
+
+        return "Unknown";
     }
 }
