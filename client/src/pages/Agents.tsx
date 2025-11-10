@@ -116,7 +116,7 @@ const Agents: React.FC = () => {
                   <td>{agent.email || '-'}</td>
                   <td>{agent.commissionPercentage}%</td>
                   <td>{agent.totalSales}</td>
-                  <td className="font-semibold">{formatCurrency(agent.totalCommission)}</td>
+                  <td className="font-semibold">{formatCurrency(agent.totalCommissionEarned)}</td>
                   <td>
                     <div className="flex items-center space-x-2">
                       <button onClick={() => handleOpenModal(agent)} className="text-blue-600 hover:text-blue-800">

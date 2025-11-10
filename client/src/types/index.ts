@@ -119,7 +119,7 @@ export interface AgentDto {
   email?: string;                // Email
   commissionPercentage: number;  // Процент комиссии
   totalSales: number;            // Всего продаж
-  totalCommission: number;       // Всего комиссий
+  totalCommissionEarned: number; // Всего комиссий
   createdAt: string;
   updatedAt?: string;
 }
