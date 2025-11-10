@@ -1,9 +1,11 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using RealEstateAccounting.Application.DTOs;
 using RealEstateAccounting.Application.Interfaces;
 using RealEstateAccounting.Domain.Entities;
 using RealEstateAccounting.Domain.Enums;
 using RealEstateAccounting.Domain.Interfaces;
+using RealEstateAccounting.Infrastructure.Identity;
 
 namespace RealEstateAccounting.Application.Services;
 
@@ -12,12 +14,14 @@ public class PaymentService : IPaymentService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IContractService _contractService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IContractService contractService)
+    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IContractService contractService, UserManager<ApplicationUser> userManager)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _contractService = contractService;
+        _userManager = userManager;
     }
 
     public async Task<PaymentDto> CreatePaymentAsync(CreatePaymentDto dto, string userId)
@@ -59,13 +63,37 @@ public class PaymentService : IPaymentService
     public async Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync()
     {
         var payments = await _unitOfWork.Payments.GetAllAsync();
-        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+        var paymentDtos = _mapper.Map<IEnumerable<PaymentDto>>(payments).ToList();
+
+        // Fetch and populate user names
+        foreach (var dto in paymentDtos)
+        {
+            if (!string.IsNullOrEmpty(dto.RecordedByUserId))
+            {
+                var user = await _userManager.FindByIdAsync(dto.RecordedByUserId);
+                dto.RecordedByUserName = user?.FullName ?? "Unknown";
+            }
+        }
+
+        return paymentDtos;
     }
 
     public async Task<IEnumerable<PaymentDto>> GetPaymentsByContractAsync(int contractId)
     {
         var payments = await _unitOfWork.Payments.GetPaymentsByContractAsync(contractId);
-        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
+        var paymentDtos = _mapper.Map<IEnumerable<PaymentDto>>(payments).ToList();
+
+        // Fetch and populate user names
+        foreach (var dto in paymentDtos)
+        {
+            if (!string.IsNullOrEmpty(dto.RecordedByUserId))
+            {
+                var user = await _userManager.FindByIdAsync(dto.RecordedByUserId);
+                dto.RecordedByUserName = user?.FullName ?? "Unknown";
+            }
+        }
+
+        return paymentDtos;
     }
 
     public async Task<PaymentReportDto> GetPaymentReportAsync(DateTime startDate, DateTime endDate)
@@ -81,6 +109,18 @@ public class PaymentService : IPaymentService
             .Where(p => p.PaymentType == PaymentType.NonCash)
             .Sum(p => p.Amount);
 
+        var paymentDtos = _mapper.Map<List<PaymentDto>>(paymentsList);
+
+        // Fetch and populate user names
+        foreach (var dto in paymentDtos)
+        {
+            if (!string.IsNullOrEmpty(dto.RecordedByUserId))
+            {
+                var user = await _userManager.FindByIdAsync(dto.RecordedByUserId);
+                dto.RecordedByUserName = user?.FullName ?? "Unknown";
+            }
+        }
+
         return new PaymentReportDto
         {
             StartDate = startDate,
@@ -88,7 +128,7 @@ public class PaymentService : IPaymentService
             TotalCash = totalCash,
             TotalNonCash = totalNonCash,
             GrandTotal = totalCash + totalNonCash,
-            Payments = _mapper.Map<List<PaymentDto>>(paymentsList)
+            Payments = paymentDtos
         };
     }
 

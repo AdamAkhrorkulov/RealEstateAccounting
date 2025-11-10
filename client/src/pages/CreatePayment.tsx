@@ -33,7 +33,17 @@ const CreatePayment: React.FC = () => {
     } else {
       loadContracts();
     }
+    // Auto-generate receipt number
+    generateReceiptNumber();
   }, [contractId]);
+
+  const generateReceiptNumber = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const timestamp = now.getTime().toString().slice(-6);
+    const receiptNum = `RCP-${year}-${timestamp}`;
+    setFormData(prev => ({ ...prev, receiptNumber: receiptNum }));
+  };
 
   const loadContracts = async () => {
     try {
