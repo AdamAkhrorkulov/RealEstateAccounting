@@ -188,6 +188,7 @@ export interface CreatePaymentDto {
   paymentType: PaymentType;
   receiptNumber?: string;
   notes?: string;
+  recordedByUserName: string;
 }
 
 // Installment Plan Types

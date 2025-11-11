@@ -74,29 +74,13 @@ public class PaymentService : IPaymentService
     public async Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync()
     {
         var payments = await _unitOfWork.Payments.GetAllAsync();
-        var paymentDtos = _mapper.Map<IEnumerable<PaymentDto>>(payments).ToList();
-
-        // Fetch and populate user names
-        foreach (var dto in paymentDtos)
-        {
-            dto.RecordedByUserName = await _userService.GetUserFullNameAsync(dto.RecordedByUserId);
-        }
-
-        return paymentDtos;
+        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
     }
 
     public async Task<IEnumerable<PaymentDto>> GetPaymentsByContractAsync(int contractId)
     {
         var payments = await _unitOfWork.Payments.GetPaymentsByContractAsync(contractId);
-        var paymentDtos = _mapper.Map<IEnumerable<PaymentDto>>(payments).ToList();
-
-        // Fetch and populate user names
-        foreach (var dto in paymentDtos)
-        {
-            dto.RecordedByUserName = await _userService.GetUserFullNameAsync(dto.RecordedByUserId);
-        }
-
-        return paymentDtos;
+        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
     }
 
     public async Task<PaymentReportDto> GetPaymentReportAsync(DateTime startDate, DateTime endDate)
@@ -113,12 +97,6 @@ public class PaymentService : IPaymentService
             .Sum(p => p.Amount);
 
         var paymentDtos = _mapper.Map<List<PaymentDto>>(paymentsList);
-
-        // Fetch and populate user names
-        foreach (var dto in paymentDtos)
-        {
-            dto.RecordedByUserName = await _userService.GetUserFullNameAsync(dto.RecordedByUserId);
-        }
 
         return new PaymentReportDto
         {

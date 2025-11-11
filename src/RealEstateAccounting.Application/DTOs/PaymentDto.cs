@@ -27,6 +27,7 @@ public class CreatePaymentDto
     public PaymentType PaymentType { get; set; }
     public string Notes { get; set; } = string.Empty;
     public string ReceiptNumber { get; set; } = string.Empty;
+    public string RecordedByUserName { get; set; } = string.Empty;
 }
 
 public class PaymentReportDto

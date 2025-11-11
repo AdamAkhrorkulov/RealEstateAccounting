@@ -12,6 +12,7 @@ public class Payment : BaseEntity
     public string Notes { get; set; } = string.Empty;
     public bool IsPaid { get; set; }
     public string ReceiptNumber { get; set; } = string.Empty;
+    public string RecordedByUserName { get; set; } = string.Empty;  // Name of person who recorded payment
 
     // Foreign Keys
     public string RecordedByUserId { get; set; } = string.Empty;  // Who recorded the payment

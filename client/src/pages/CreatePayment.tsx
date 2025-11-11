@@ -19,6 +19,7 @@ const CreatePayment: React.FC = () => {
     paymentType: PaymentType.Cash,
     receiptNumber: '',
     notes: '',
+    recordedByUserName: '',
   });
 
   const [contract, setContract] = useState<ContractDto | null>(null);
@@ -285,6 +286,22 @@ const CreatePayment: React.FC = () => {
               onChange={handleChange}
               className="input"
               placeholder="Номер квитанции (необязательно)"
+            />
+          </div>
+
+          {/* Recorded By User Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Записал *
+            </label>
+            <input
+              type="text"
+              name="recordedByUserName"
+              value={formData.recordedByUserName}
+              onChange={handleChange}
+              className="input"
+              required
+              placeholder="Ваше имя"
             />
           </div>
 
