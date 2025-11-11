@@ -30,7 +30,6 @@ public class ContractDto
 
 public class CreateContractDto
 {
-    public string ContractNumber { get; set; } = string.Empty;
     public DateTime ContractDate { get; set; }
     public int DurationMonths { get; set; }
     public decimal DownPayment { get; set; }

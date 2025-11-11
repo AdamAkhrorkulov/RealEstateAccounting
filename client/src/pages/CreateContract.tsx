@@ -19,7 +19,6 @@ const CreateContract: React.FC = () => {
 
   // Form data
   const [formData, setFormData] = useState<CreateContractDto>({
-    contractNumber: '',
     contractDate: new Date().toISOString().split('T')[0],
     customerId: 0,
     apartmentId: 0,
@@ -87,10 +86,6 @@ const CreateContract: React.FC = () => {
     setError('');
 
     // Validation
-    if (!formData.contractNumber) {
-      setError('Введите номер договора');
-      return;
-    }
     if (formData.customerId === 0) {
       setError('Выберите клиента');
       return;
@@ -151,6 +146,13 @@ const CreateContract: React.FC = () => {
       {/* Form */}
       <div className="card p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Info about auto-generated contract number */}
+          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
+            <p className="text-sm">
+              <strong>Примечание:</strong> Номер договора будет создан автоматически в формате RE-ГГГГ-XXX (например: RE-2025-001)
+            </p>
+          </div>
+
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               {error}
@@ -158,24 +160,6 @@ const CreateContract: React.FC = () => {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Contract Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Номер договора *
-              </label>
-              <input
-                type="text"
-                value={formData.contractNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, contractNumber: e.target.value })
-                }
-                className="input"
-                placeholder="RE-2025-001"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">Пример: RE-2025-001</p>
-            </div>
-
             {/* Contract Date */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

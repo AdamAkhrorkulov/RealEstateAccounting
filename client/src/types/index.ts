@@ -155,7 +155,6 @@ export interface ContractDto {
 }
 
 export interface CreateContractDto {
-  contractNumber: string;
   contractDate: string;
   customerId: number;
   apartmentId: number;
