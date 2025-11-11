@@ -288,19 +288,24 @@ const CreateContract: React.FC = () => {
               </label>
               <input
                 type="number"
-                value={formData.durationMonths}
+                value={formData.durationMonths || ''}
                 onChange={(e) =>
-                  setFormData({ ...formData, durationMonths: Number(e.target.value) })
+                  setFormData({ ...formData, durationMonths: Number(e.target.value) || 0 })
                 }
                 className="input"
                 min="1"
                 max="120"
                 required
+                placeholder="12"
               />
               <p className="text-xs text-gray-500 mt-1">
-                {formData.durationMonths} {formData.durationMonths === 1 ? 'месяц' :
-                 formData.durationMonths < 5 ? 'месяца' : 'месяцев'}
-                {' '}({(formData.durationMonths / 12).toFixed(1)} лет)
+                {formData.durationMonths > 0 && (
+                  <>
+                    {formData.durationMonths} {formData.durationMonths === 1 ? 'месяц' :
+                     formData.durationMonths < 5 ? 'месяца' : 'месяцев'}
+                    {' '}({(formData.durationMonths / 12).toFixed(1)} лет)
+                  </>
+                )}
               </p>
             </div>
           </div>
