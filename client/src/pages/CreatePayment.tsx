@@ -252,9 +252,13 @@ const CreatePayment: React.FC = () => {
               required
               step="0.01"
               min="0.01"
-              className="input"
+              className="input bg-gray-100 cursor-not-allowed"
               placeholder="0.00"
+              readOnly
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Автоматически заполняется ежемесячным платежом
+            </p>
           </div>
 
           {/* Payment Type */}
@@ -284,9 +288,13 @@ const CreatePayment: React.FC = () => {
               name="receiptNumber"
               value={formData.receiptNumber}
               onChange={handleChange}
-              className="input"
-              placeholder="Номер квитанции (необязательно)"
+              className="input bg-gray-100 cursor-not-allowed"
+              placeholder="Автоматически генерируется"
+              readOnly
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Автоматически генерируется в формате RCP-YYYY-XXXXXX
+            </p>
           </div>
 
           {/* Recorded By User Name */}
@@ -356,8 +364,9 @@ const CreatePayment: React.FC = () => {
         <h3 className="font-semibold text-gray-900 mb-2">Информация</h3>
         <ul className="text-sm text-gray-600 space-y-1">
           <li>• Все платежи записываются вручную (наличные или банковский перевод)</li>
-          <li>• Убедитесь, что сумма и дата платежа указаны правильно</li>
-          <li>• Номер квитанции не обязателен, но рекомендуется для отслеживания</li>
+          <li>• Сумма платежа автоматически заполняется ежемесячным платежом договора</li>
+          <li>• Номер квитанции генерируется автоматически для отслеживания</li>
+          <li>• Убедитесь, что дата платежа указана правильно</li>
           <li>• После записи платеж будет привязан к договору и графику платежей</li>
         </ul>
       </div>
