@@ -62,6 +62,7 @@ export interface UserDto {
 // Apartment Types
 export interface ApartmentDto {
   id: number;
+  apartmentNumber: string;     // Номер квартиры
   block: string;               // Блок
   entrance: number;            // Подъезд
   floor: number;               // Этаж
@@ -75,6 +76,7 @@ export interface ApartmentDto {
 }
 
 export interface CreateApartmentDto {
+  apartmentNumber: string;
   block: string;
   entrance: number;
   floor: number;
@@ -117,7 +119,7 @@ export interface AgentDto {
   email?: string;                // Email
   commissionPercentage: number;  // Процент комиссии
   totalSales: number;            // Всего продаж
-  totalCommission: number;       // Всего комиссий
+  totalCommissionEarned: number; // Всего комиссий
   createdAt: string;
   updatedAt?: string;
 }
@@ -153,7 +155,6 @@ export interface ContractDto {
 }
 
 export interface CreateContractDto {
-  contractNumber: string;
   contractDate: string;
   customerId: number;
   apartmentId: number;
@@ -186,6 +187,7 @@ export interface CreatePaymentDto {
   paymentType: PaymentType;
   receiptNumber?: string;
   notes?: string;
+  recordedByUserName: string;
 }
 
 // Installment Plan Types

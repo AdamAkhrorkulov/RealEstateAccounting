@@ -7,6 +7,12 @@ public class ContractDto
     public int Id { get; set; }
     public string ContractNumber { get; set; } = string.Empty;
     public DateTime ContractDate { get; set; }
+    public int CustomerId { get; set; }
+    public string CustomerName { get; set; } = string.Empty;
+    public int ApartmentId { get; set; }
+    public string ApartmentInfo { get; set; } = string.Empty;
+    public int AgentId { get; set; }
+    public string AgentName { get; set; } = string.Empty;
     public int DurationMonths { get; set; }
     public decimal TotalAmount { get; set; }
     public decimal DownPayment { get; set; }
@@ -24,7 +30,6 @@ public class ContractDto
 
 public class CreateContractDto
 {
-    public string ContractNumber { get; set; } = string.Empty;
     public DateTime ContractDate { get; set; }
     public int DurationMonths { get; set; }
     public decimal DownPayment { get; set; }

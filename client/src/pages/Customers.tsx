@@ -119,65 +119,67 @@ const Customers: React.FC = () => {
   if (loading) return <LoadingSpinner className="h-screen" />;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Клиенты</h1>
-          <p className="text-gray-600 mt-2">Управление клиентами</p>
+          <h1 className="text-2xl font-bold text-gray-900">Клиенты</h1>
+          <p className="text-sm text-gray-600 mt-1">Управление клиентами</p>
         </div>
-        <button onClick={() => handleOpenModal()} className="btn btn-primary flex items-center space-x-2">
-          <Plus className="w-5 h-5" />
+        <button onClick={() => handleOpenModal()} className="btn btn-primary flex items-center space-x-2 text-sm">
+          <Plus className="w-4 h-4" />
           <span>Добавить клиента</span>
         </button>
       </div>
 
-      <div className="card p-4">
+      <div className="card p-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
             placeholder="Поиск по имени, телефону, паспорту..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="input pl-10"
+            className="input pl-9 text-sm"
           />
         </div>
       </div>
 
-      <div className="card">
-        <div className="table-container">
-          <table className="table">
-            <thead>
+      <div className="card p-0">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th>ФИО</th>
-                <th>Паспорт</th>
-                <th>Дата выдачи</th>
-                <th>Телефон</th>
-                <th>Email</th>
-                <th>Действия</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">ФИО</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Паспорт</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Дата выдачи</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Телефон</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Email</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Действия</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="bg-white divide-y divide-gray-200">
               {filteredCustomers.map((customer) => (
-                <tr key={customer.id}>
-                  <td className="font-medium">{customer.fullName}</td>
-                  <td>{customer.passportSeries} {customer.passportNumber}</td>
-                  <td>{formatDate(customer.passportIssueDate)}</td>
-                  <td>{customer.phoneNumber}</td>
-                  <td>{customer.email || '-'}</td>
-                  <td>
+                <tr key={customer.id} className="hover:bg-gray-50">
+                  <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{customer.fullName}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{customer.passportSeries} {customer.passportNumber}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{customer.passportIssueDate}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{customer.phoneNumber}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-700">{customer.email || '-'}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => handleOpenModal(customer)}
                         className="text-blue-600 hover:text-blue-800"
+                        title="Редактировать"
                       >
-                        <Edit className="w-5 h-5" />
+                        <Edit className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDelete(customer.id)}
                         className="text-red-600 hover:text-red-800"
+                        title="Удалить"
                       >
-                        <Trash2 className="w-5 h-5" />
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
@@ -207,10 +209,14 @@ const Customers: React.FC = () => {
               <input
                 type="text"
                 value={formData.passportSeries}
-                onChange={(e) => setFormData({ ...formData, passportSeries: e.target.value.toUpperCase() })}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^A-Za-z]/g, '').toUpperCase();
+                  setFormData({ ...formData, passportSeries: value });
+                }}
                 className="input"
                 maxLength={2}
                 required
+                placeholder="AA"
               />
             </div>
 
@@ -219,10 +225,14 @@ const Customers: React.FC = () => {
               <input
                 type="text"
                 value={formData.passportNumber}
-                onChange={(e) => setFormData({ ...formData, passportNumber: e.target.value })}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/[^0-9]/g, '');
+                  setFormData({ ...formData, passportNumber: value });
+                }}
                 className="input"
                 maxLength={7}
                 required
+                placeholder="1234567"
               />
             </div>
 

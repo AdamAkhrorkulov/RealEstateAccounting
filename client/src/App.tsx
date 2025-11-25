@@ -8,8 +8,10 @@ import Apartments from './pages/Apartments';
 import Customers from './pages/Customers';
 import Agents from './pages/Agents';
 import Contracts from './pages/Contracts';
+import ContractDetails from './pages/ContractDetails';
 import CreateContract from './pages/CreateContract';
 import Payments from './pages/Payments';
+import CreatePayment from './pages/CreatePayment';
 import LoadingSpinner from './components/common/LoadingSpinner';
 
 // Protected Route Component
@@ -112,10 +114,26 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/contracts/:id"
+        element={
+          <ProtectedRoute>
+            <ContractDetails />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/contracts"
         element={
           <ProtectedRoute>
             <Contracts />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payments/new"
+        element={
+          <ProtectedRoute>
+            <CreatePayment />
           </ProtectedRoute>
         }
       />

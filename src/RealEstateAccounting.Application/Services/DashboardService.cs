@@ -26,46 +26,72 @@ public class DashboardService : IDashboardService
         var totalApartments = allApartments.Count;
         var soldApartments = allApartments.Count(a => a.Status == ApartmentStatus.Sold);
         var availableApartments = allApartments.Count(a => a.Status == ApartmentStatus.Available);
+        var reservedApartments = allApartments.Count(a => a.Status == ApartmentStatus.Reserved);
+
+        // Get contract statistics
+        var allContracts = (await _unitOfWork.Contracts.GetAllAsync()).ToList();
+        var activeContracts = allContracts.Count(c => c.Status == ContractStatus.Active);
+        var completedContracts = allContracts.Count(c => c.Status == ContractStatus.Completed);
+        var overdueContractsCount = allContracts.Count(c => c.Status == ContractStatus.Overdue);
 
         // Get revenue statistics
-        var allContracts = (await _unitOfWork.Contracts.GetAllAsync()).ToList();
         var totalRevenue = allContracts.Sum(c => c.TotalAmount);
-        var totalReceived = await _unitOfWork.Payments.GetTotalPaymentsAsync();
-        var totalPending = totalRevenue - totalReceived;
+        var receivedRevenue = await _unitOfWork.Payments.GetTotalPaymentsAsync();
+        var pendingRevenue = totalRevenue - receivedRevenue;
 
-        // Get monthly revenue
-        var currentMonthStart = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-        var currentMonthEnd = currentMonthStart.AddMonths(1).AddDays(-1);
-        var monthlyRevenue = await _unitOfWork.Payments.GetTotalPaymentsAsync(currentMonthStart, currentMonthEnd);
-
-        // Get overdue contracts
+        // Calculate overdue amount
         var overdueContracts = await _unitOfWork.Contracts.GetOverdueContractsAsync();
-        var overdueCount = overdueContracts.Count();
+        var overdueAmount = overdueContracts.Sum(c => c.RemainingBalance);
+
+        // Get customer and agent counts
+        var totalCustomers = (await _unitOfWork.Customers.GetAllAsync()).Count();
+        var totalAgents = (await _unitOfWork.Agents.GetAllAsync()).Count();
 
         // Get top performing agents
         var topAgents = await _agentService.GetTopPerformingAgentsAsync(5);
 
-        // Get monthly trends
-        var monthlyTrends = await GetMonthlyRevenueTrendsAsync(12);
+        // Get monthly revenue trends
+        var revenueData = new List<RevenueDataDto>();
+        var currentDate = DateTime.UtcNow;
 
-        // Get recent contracts
-        var recentContracts = allContracts
-            .OrderByDescending(c => c.ContractDate)
-            .Take(10)
-            .ToList();
+        for (int i = 11; i >= 0; i--)
+        {
+            var targetDate = currentDate.AddMonths(-i);
+            var monthStart = new DateTime(targetDate.Year, targetDate.Month, 1);
+            var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+
+            var monthRevenue = await _unitOfWork.Payments.GetTotalPaymentsAsync(monthStart, monthEnd);
+            var monthPayments = (await _unitOfWork.Payments.GetAllAsync())
+                .Count(p => p.PaymentDate >= monthStart && p.PaymentDate <= monthEnd);
+
+            revenueData.Add(new RevenueDataDto
+            {
+                Month = monthStart.ToString("MMM yyyy"),
+                Revenue = monthRevenue,
+                Payments = monthPayments
+            });
+        }
 
         return new DashboardDto
         {
-            TotalApartments = totalApartments,
-            ApartmentsSold = soldApartments,
-            ApartmentsAvailable = availableApartments,
-            TotalRevenue = totalReceived,
-            TotalPending = totalPending,
-            MonthlyRevenue = monthlyRevenue,
-            OverdueContracts = overdueCount,
-            TopAgents = topAgents.ToList(),
-            MonthlyTrends = monthlyTrends,
-            RecentContracts = _mapper.Map<List<ContractDto>>(recentContracts)
+            Stats = new DashboardStatsDto
+            {
+                TotalApartments = totalApartments,
+                AvailableApartments = availableApartments,
+                SoldApartments = soldApartments,
+                ReservedApartments = reservedApartments,
+                TotalRevenue = totalRevenue,
+                ReceivedRevenue = receivedRevenue,
+                PendingRevenue = pendingRevenue,
+                OverdueAmount = overdueAmount,
+                ActiveContracts = activeContracts,
+                CompletedContracts = completedContracts,
+                OverdueContracts = overdueContractsCount,
+                TotalCustomers = totalCustomers,
+                TotalAgents = totalAgents
+            },
+            RevenueData = revenueData,
+            TopAgents = topAgents.ToList()
         };
     }
 

@@ -19,7 +19,6 @@ const CreateContract: React.FC = () => {
 
   // Form data
   const [formData, setFormData] = useState<CreateContractDto>({
-    contractNumber: '',
     contractDate: new Date().toISOString().split('T')[0],
     customerId: 0,
     apartmentId: 0,
@@ -87,10 +86,6 @@ const CreateContract: React.FC = () => {
     setError('');
 
     // Validation
-    if (!formData.contractNumber) {
-      setError('Введите номер договора');
-      return;
-    }
     if (formData.customerId === 0) {
       setError('Выберите клиента');
       return;
@@ -151,6 +146,13 @@ const CreateContract: React.FC = () => {
       {/* Form */}
       <div className="card p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Info about auto-generated contract number */}
+          <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg">
+            <p className="text-sm">
+              <strong>Примечание:</strong> Номер договора будет создан автоматически в формате RE-ГГГГ-XXX (например: RE-2025-001)
+            </p>
+          </div>
+
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               {error}
@@ -158,24 +160,6 @@ const CreateContract: React.FC = () => {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Contract Number */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Номер договора *
-              </label>
-              <input
-                type="text"
-                value={formData.contractNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, contractNumber: e.target.value })
-                }
-                className="input"
-                placeholder="RE-2025-001"
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">Пример: RE-2025-001</p>
-            </div>
-
             {/* Contract Date */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -235,7 +219,7 @@ const CreateContract: React.FC = () => {
                 <option value={0}>Выберите квартиру</option>
                 {apartments.map((apt) => (
                   <option key={apt.id} value={apt.id}>
-                    Блок {apt.block}, Подъезд {apt.entrance}, Этаж {apt.floor} -{' '}
+                    № {apt.apartmentNumber} - Блок {apt.block}, Подъезд {apt.entrance}, Этаж {apt.floor} -{' '}
                     {apt.roomCount}-комн. ({apt.area} м²) - {formatCurrency(apt.totalPrice)}
                   </option>
                 ))}
@@ -281,17 +265,18 @@ const CreateContract: React.FC = () => {
               </label>
               <input
                 type="number"
-                value={formData.downPayment}
+                value={formData.downPayment || ''}
                 onChange={(e) =>
-                  setFormData({ ...formData, downPayment: Number(e.target.value) })
+                  setFormData({ ...formData, downPayment: Number(e.target.value) || 0 })
                 }
                 className="input"
                 min="0"
                 max={totalAmount}
                 required
+                placeholder="0"
               />
               <p className="text-xs text-gray-500 mt-1">
-                {totalAmount > 0 &&
+                {totalAmount > 0 && formData.downPayment > 0 &&
                   `${((formData.downPayment / totalAmount) * 100).toFixed(1)}% от общей суммы`}
               </p>
             </div>
@@ -303,19 +288,24 @@ const CreateContract: React.FC = () => {
               </label>
               <input
                 type="number"
-                value={formData.durationMonths}
+                value={formData.durationMonths || ''}
                 onChange={(e) =>
-                  setFormData({ ...formData, durationMonths: Number(e.target.value) })
+                  setFormData({ ...formData, durationMonths: Number(e.target.value) || 0 })
                 }
                 className="input"
                 min="1"
                 max="120"
                 required
+                placeholder="12"
               />
               <p className="text-xs text-gray-500 mt-1">
-                {formData.durationMonths} {formData.durationMonths === 1 ? 'месяц' :
-                 formData.durationMonths < 5 ? 'месяца' : 'месяцев'}
-                {' '}({(formData.durationMonths / 12).toFixed(1)} лет)
+                {formData.durationMonths > 0 && (
+                  <>
+                    {formData.durationMonths} {formData.durationMonths === 1 ? 'месяц' :
+                     formData.durationMonths < 5 ? 'месяца' : 'месяцев'}
+                    {' '}({(formData.durationMonths / 12).toFixed(1)} лет)
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -331,7 +321,7 @@ const CreateContract: React.FC = () => {
                 <div>
                   <p className="text-sm text-gray-600">Квартира:</p>
                   <p className="text-lg font-semibold text-gray-900">
-                    Блок {selectedApartment.block}, Подъезд {selectedApartment.entrance}, Этаж{' '}
+                    № {selectedApartment.apartmentNumber} - Блок {selectedApartment.block}, Подъезд {selectedApartment.entrance}, Этаж{' '}
                     {selectedApartment.floor}
                   </p>
                   <p className="text-sm text-gray-600">

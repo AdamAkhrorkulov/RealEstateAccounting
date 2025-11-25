@@ -116,7 +116,7 @@ const Agents: React.FC = () => {
                   <td>{agent.email || '-'}</td>
                   <td>{agent.commissionPercentage}%</td>
                   <td>{agent.totalSales}</td>
-                  <td className="font-semibold">{formatCurrency(agent.totalCommission)}</td>
+                  <td className="font-semibold">{formatCurrency(agent.totalCommissionEarned)}</td>
                   <td>
                     <div className="flex items-center space-x-2">
                       <button onClick={() => handleOpenModal(agent)} className="text-blue-600 hover:text-blue-800">
@@ -173,12 +173,13 @@ const Agents: React.FC = () => {
             <input
               type="number"
               step="0.1"
-              value={formData.commissionPercentage}
-              onChange={(e) => setFormData({ ...formData, commissionPercentage: Number(e.target.value) })}
+              value={formData.commissionPercentage || ''}
+              onChange={(e) => setFormData({ ...formData, commissionPercentage: Number(e.target.value) || 0 })}
               className="input"
               min="0"
               max="100"
               required
+              placeholder="0"
             />
           </div>
 

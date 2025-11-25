@@ -37,13 +37,12 @@ public class ContractService : IContractService
         if (agent == null)
             throw new ArgumentException("Agent not found");
 
-        // Check if contract number is unique
-        var existingContract = await _unitOfWork.Contracts.GetByContractNumberAsync(dto.ContractNumber);
-        if (existingContract != null)
-            throw new InvalidOperationException("Contract number already exists");
+        // Auto-generate contract number
+        var contractNumber = await _unitOfWork.Contracts.GetNextContractNumberAsync();
 
         // Create contract
         var contract = _mapper.Map<Contract>(dto);
+        contract.ContractNumber = contractNumber;
         contract.TotalAmount = apartment.TotalPrice;
 
         // Calculate monthly payment
@@ -182,7 +181,7 @@ public class ContractService : IContractService
         {
             var installmentPlan = new InstallmentPlan
             {
-                ContractId = contract.Id,
+                Contract = contract,
                 MonthNumber = month,
                 DueDate = currentDate,
                 ScheduledAmount = contract.MonthlyPayment,

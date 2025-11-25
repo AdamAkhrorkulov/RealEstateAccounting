@@ -44,6 +44,7 @@ public class InstallmentPlanRepository : GenericRepository<InstallmentPlan>, IIn
         {
             plan.IsPaid = true;
             plan.PaidDate = DateTime.UtcNow;
+            plan.PaymentId = paymentId;
         }
     }
 }

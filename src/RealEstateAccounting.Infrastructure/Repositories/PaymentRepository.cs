@@ -12,6 +12,14 @@ public class PaymentRepository : GenericRepository<Payment>, IPaymentRepository
     {
     }
 
+    public override async Task<IEnumerable<Payment>> GetAllAsync()
+    {
+        return await _dbSet
+            .Include(p => p.Contract)
+            .OrderByDescending(p => p.PaymentDate)
+            .ToListAsync();
+    }
+
     public async Task<IEnumerable<Payment>> GetPaymentsByContractAsync(int contractId)
     {
         return await _dbSet

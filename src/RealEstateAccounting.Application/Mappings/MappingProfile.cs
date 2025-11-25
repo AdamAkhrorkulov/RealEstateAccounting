@@ -36,6 +36,11 @@ public class MappingProfile : Profile
 
         // Contract mappings
         CreateMap<Contract, ContractDto>()
+            .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Customer != null ? src.Customer.FullName : string.Empty))
+            .ForMember(dest => dest.ApartmentInfo, opt => opt.MapFrom(src => src.Apartment != null
+                ? $"№ {src.Apartment.ApartmentNumber}, Блок {src.Apartment.Block}, Подъезд {src.Apartment.Entrance}, Этаж {src.Apartment.Floor}, {src.Apartment.RoomCount} комн."
+                : string.Empty))
+            .ForMember(dest => dest.AgentName, opt => opt.MapFrom(src => src.Agent != null ? src.Agent.FullName : string.Empty))
             .ForMember(dest => dest.RemainingBalance, opt => opt.MapFrom(src => src.RemainingBalance))
             .ForMember(dest => dest.MonthsPaid, opt => opt.MapFrom(src => src.MonthsPaid))
             .ForMember(dest => dest.MonthsRemaining, opt => opt.MapFrom(src => src.MonthsRemaining));
@@ -50,7 +55,8 @@ public class MappingProfile : Profile
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
 
         // Payment mappings
-        CreateMap<Payment, PaymentDto>();
+        CreateMap<Payment, PaymentDto>()
+            .ForMember(dest => dest.ContractNumber, opt => opt.MapFrom(src => src.Contract != null ? src.Contract.ContractNumber : string.Empty));
         CreateMap<CreatePaymentDto, Payment>()
             .ForMember(dest => dest.IsPaid, opt => opt.MapFrom(src => true));
 

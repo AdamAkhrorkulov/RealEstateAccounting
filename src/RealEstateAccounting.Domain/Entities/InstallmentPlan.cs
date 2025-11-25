@@ -8,6 +8,7 @@ public class InstallmentPlan : BaseEntity
     public decimal ScheduledAmount { get; set; }  // Сумма по графику
     public bool IsPaid { get; set; }
     public DateTime? PaidDate { get; set; }
+    public int? PaymentId { get; set; }  // ID платежа
 
     // Navigation properties
     public Contract Contract { get; set; } = null!;

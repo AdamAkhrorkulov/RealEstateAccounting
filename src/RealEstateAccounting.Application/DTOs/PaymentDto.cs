@@ -6,6 +6,7 @@ public class PaymentDto
 {
     public int Id { get; set; }
     public int ContractId { get; set; }
+    public string ContractNumber { get; set; } = string.Empty;
     public int? InstallmentPlanId { get; set; }
     public decimal Amount { get; set; }
     public DateTime PaymentDate { get; set; }
@@ -13,6 +14,8 @@ public class PaymentDto
     public string Notes { get; set; } = string.Empty;
     public bool IsPaid { get; set; }
     public string ReceiptNumber { get; set; } = string.Empty;
+    public string RecordedByUserId { get; set; } = string.Empty;
+    public string RecordedByUserName { get; set; } = string.Empty;
 }
 
 public class CreatePaymentDto
@@ -24,6 +27,7 @@ public class CreatePaymentDto
     public PaymentType PaymentType { get; set; }
     public string Notes { get; set; } = string.Empty;
     public string ReceiptNumber { get; set; } = string.Empty;
+    public string RecordedByUserName { get; set; } = string.Empty;
 }
 
 public class PaymentReportDto

@@ -12,12 +12,14 @@ public class PaymentService : IPaymentService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IContractService _contractService;
+    private readonly IUserService _userService;
 
-    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IContractService contractService)
+    public PaymentService(IUnitOfWork unitOfWork, IMapper mapper, IContractService contractService, IUserService userService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _contractService = contractService;
+        _userService = userService;
     }
 
     public async Task<PaymentDto> CreatePaymentAsync(CreatePaymentDto dto, string userId)
@@ -32,10 +34,23 @@ public class PaymentService : IPaymentService
         payment.RecordedByUserId = userId;
 
         await _unitOfWork.Payments.AddAsync(payment);
+        await _unitOfWork.SaveChangesAsync(); // Save to get the payment ID
 
-        // If linked to installment plan, mark it as paid
-        if (dto.InstallmentPlanId.HasValue)
+        // If no installment plan specified, automatically link to next unpaid plan
+        if (!dto.InstallmentPlanId.HasValue)
         {
+            var unpaidPlans = await _unitOfWork.InstallmentPlans.GetUnpaidPlansAsync(dto.ContractId);
+            var nextUnpaidPlan = unpaidPlans.OrderBy(p => p.MonthNumber).FirstOrDefault();
+
+            if (nextUnpaidPlan != null)
+            {
+                payment.InstallmentPlanId = nextUnpaidPlan.Id;
+                await _unitOfWork.InstallmentPlans.MarkAsPaidAsync(nextUnpaidPlan.Id, payment.Id);
+            }
+        }
+        else
+        {
+            // If linked to specific installment plan, mark it as paid
             await _unitOfWork.InstallmentPlans.MarkAsPaidAsync(dto.InstallmentPlanId.Value, payment.Id);
         }
 
@@ -54,6 +69,12 @@ public class PaymentService : IPaymentService
             throw new ArgumentException("Payment not found");
 
         return _mapper.Map<PaymentDto>(payment);
+    }
+
+    public async Task<IEnumerable<PaymentDto>> GetAllPaymentsAsync()
+    {
+        var payments = await _unitOfWork.Payments.GetAllAsync();
+        return _mapper.Map<IEnumerable<PaymentDto>>(payments);
     }
 
     public async Task<IEnumerable<PaymentDto>> GetPaymentsByContractAsync(int contractId)
@@ -75,6 +96,8 @@ public class PaymentService : IPaymentService
             .Where(p => p.PaymentType == PaymentType.NonCash)
             .Sum(p => p.Amount);
 
+        var paymentDtos = _mapper.Map<List<PaymentDto>>(paymentsList);
+
         return new PaymentReportDto
         {
             StartDate = startDate,
@@ -82,7 +105,7 @@ public class PaymentService : IPaymentService
             TotalCash = totalCash,
             TotalNonCash = totalNonCash,
             GrandTotal = totalCash + totalNonCash,
-            Payments = _mapper.Map<List<PaymentDto>>(paymentsList)
+            Payments = paymentDtos
         };
     }
 

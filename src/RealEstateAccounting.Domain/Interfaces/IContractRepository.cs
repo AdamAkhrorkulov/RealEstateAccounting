@@ -11,4 +11,5 @@ public interface IContractRepository : IGenericRepository<Contract>
     Task<IEnumerable<Contract>> GetContractsByStatusAsync(ContractStatus status);
     Task<IEnumerable<Contract>> GetOverdueContractsAsync();
     Task<Contract?> GetByContractNumberAsync(string contractNumber);
+    Task<string> GetNextContractNumberAsync();
 }
