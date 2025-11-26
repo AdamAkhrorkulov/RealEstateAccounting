@@ -255,4 +255,9 @@ export const dashboardApi = {
   },
 };
 
+// Export auth functions as named exports for convenience
+export const register = authApi.register;
+export const getAllUsers = authApi.getAllUsers;
+export const deactivateUser = authApi.deactivateUser;
+
 export default api;
