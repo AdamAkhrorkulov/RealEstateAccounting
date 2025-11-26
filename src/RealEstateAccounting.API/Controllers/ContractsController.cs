@@ -22,7 +22,14 @@ public class ContractsController : ControllerBase
 
     // Helper methods to get current user context
     private string GetCurrentUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+    private string GetCurrentUserRole() => User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
     private int GetCurrentCompanyId() => int.TryParse(User.FindFirst("CompanyId")?.Value, out var id) ? id : 0;  // Multi-tenancy
+    private int? GetCurrentAgentId() => int.TryParse(User.FindFirst("AgentId")?.Value, out var id) ? id : null;
+    private int? GetCurrentCustomerId() => int.TryParse(User.FindFirst("CustomerId")?.Value, out var id) ? id : null;
+    private bool IsAdmin() => User.IsInRole("Admin");
+    private bool IsAccountant() => User.IsInRole("Accountant");
+    private bool IsAgent() => User.IsInRole("Agent");
+    private bool IsCustomer() => User.IsInRole("Customer");
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ContractDto>>> GetAll()
@@ -30,10 +37,38 @@ public class ContractsController : ControllerBase
         try
         {
             var userCompanyId = GetCurrentCompanyId();
-            var contracts = await _contractService.GetAllContractsAsync();
+            IEnumerable<ContractDto> contracts;
 
-            // Multi-tenancy: Filter by company - all admins can see all contracts within their company
-            contracts = contracts.Where(c => c.CompanyId == userCompanyId).ToList();
+            if (IsAdmin() || IsAccountant())
+            {
+                // Admin and Accountant can see all contracts within their company
+                contracts = await _contractService.GetAllContractsAsync();
+                contracts = contracts.Where(c => c.CompanyId == userCompanyId).ToList();
+            }
+            else if (IsAgent())
+            {
+                // Agent can only see their own contracts within their company
+                var agentId = GetCurrentAgentId();
+                if (!agentId.HasValue)
+                    return Forbid();
+
+                contracts = await _contractService.GetContractsByAgentAsync(agentId.Value);
+                contracts = contracts.Where(c => c.CompanyId == userCompanyId).ToList();
+            }
+            else if (IsCustomer())
+            {
+                // Customer can only see their own contracts within their company
+                var customerId = GetCurrentCustomerId();
+                if (!customerId.HasValue)
+                    return Forbid();
+
+                contracts = await _contractService.GetContractsByCustomerAsync(customerId.Value);
+                contracts = contracts.Where(c => c.CompanyId == userCompanyId).ToList();
+            }
+            else
+            {
+                return Forbid();
+            }
 
             return Ok(contracts);
         }
@@ -97,8 +132,27 @@ public class ContractsController : ControllerBase
     {
         var userCompanyId = GetCurrentCompanyId();
 
-        // Multi-tenancy: Check company isolation - users can NEVER access data from other companies
-        return contract.CompanyId == userCompanyId;
+        // CRITICAL: First check company isolation - users can NEVER access data from other companies
+        if (contract.CompanyId != userCompanyId)
+            return false;
+
+        // Admin and Accountant can see all contracts within their company
+        if (IsAdmin() || IsAccountant())
+            return true;
+
+        if (IsAgent())
+        {
+            var agentId = GetCurrentAgentId();
+            return agentId.HasValue && contract.AgentId == agentId.Value;
+        }
+
+        if (IsCustomer())
+        {
+            var customerId = GetCurrentCustomerId();
+            return customerId.HasValue && contract.CustomerId == customerId.Value;
+        }
+
+        return false;
     }
 
     // Helper method to check if current user can access contract details
@@ -106,8 +160,27 @@ public class ContractsController : ControllerBase
     {
         var userCompanyId = GetCurrentCompanyId();
 
-        // Multi-tenancy: Check company isolation - users can NEVER access data from other companies
-        return contract.CompanyId == userCompanyId;
+        // CRITICAL: First check company isolation - users can NEVER access data from other companies
+        if (contract.CompanyId != userCompanyId)
+            return false;
+
+        // Admin and Accountant can see all contracts within their company
+        if (IsAdmin() || IsAccountant())
+            return true;
+
+        if (IsAgent())
+        {
+            var agentId = GetCurrentAgentId();
+            return agentId.HasValue && contract.AgentId == agentId.Value;
+        }
+
+        if (IsCustomer())
+        {
+            var customerId = GetCurrentCustomerId();
+            return customerId.HasValue && contract.CustomerId == customerId.Value;
+        }
+
+        return false;
     }
 
     [HttpGet("customer/{customerId}")]
@@ -115,12 +188,20 @@ public class ContractsController : ControllerBase
     {
         try
         {
-            var userCompanyId = GetCurrentCompanyId();
+            // Customers can only query their own data
+            if (IsCustomer())
+            {
+                var currentCustomerId = GetCurrentCustomerId();
+                if (!currentCustomerId.HasValue || currentCustomerId.Value != customerId)
+                    return Forbid();
+            }
+            // Agents cannot access customer contracts directly
+            else if (IsAgent())
+            {
+                return Forbid();
+            }
+
             var contracts = await _contractService.GetContractsByCustomerAsync(customerId);
-
-            // Multi-tenancy: Filter by company
-            contracts = contracts.Where(c => c.CompanyId == userCompanyId).ToList();
-
             return Ok(contracts);
         }
         catch (Exception ex)
@@ -135,12 +216,20 @@ public class ContractsController : ControllerBase
     {
         try
         {
-            var userCompanyId = GetCurrentCompanyId();
+            // Agents can only query their own data
+            if (IsAgent())
+            {
+                var currentAgentId = GetCurrentAgentId();
+                if (!currentAgentId.HasValue || currentAgentId.Value != agentId)
+                    return Forbid();
+            }
+            // Customers cannot access agent contracts
+            else if (IsCustomer())
+            {
+                return Forbid();
+            }
+
             var contracts = await _contractService.GetContractsByAgentAsync(agentId);
-
-            // Multi-tenancy: Filter by company
-            contracts = contracts.Where(c => c.CompanyId == userCompanyId).ToList();
-
             return Ok(contracts);
         }
         catch (Exception ex)
@@ -151,6 +240,7 @@ public class ContractsController : ControllerBase
     }
 
     [HttpGet("overdue")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<IEnumerable<ContractDto>>> GetOverdue()
     {
         try
@@ -166,6 +256,7 @@ public class ContractsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<ContractDto>> Create([FromBody] CreateContractDto dto)
     {
         try
@@ -191,6 +282,7 @@ public class ContractsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<ContractDto>> Update(int id, [FromBody] UpdateContractDto dto)
     {
         try
@@ -211,6 +303,7 @@ public class ContractsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int id)
     {
         try

@@ -31,6 +31,18 @@ public class JwtTokenService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
+        // Add AgentId if user is an agent
+        if (user.AgentId.HasValue)
+        {
+            claimsList.Add(new Claim("AgentId", user.AgentId.Value.ToString()));
+        }
+
+        // Add CustomerId if user is a customer
+        if (user.CustomerId.HasValue)
+        {
+            claimsList.Add(new Claim("CustomerId", user.CustomerId.Value.ToString()));
+        }
+
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
