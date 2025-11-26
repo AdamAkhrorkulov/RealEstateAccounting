@@ -5,6 +5,7 @@ namespace RealEstateAccounting.Application.DTOs;
 public class ApartmentDto
 {
     public int Id { get; set; }
+    public int CompanyId { get; set; }  // Multi-tenancy
     public string ApartmentNumber { get; set; } = string.Empty;
     public string Block { get; set; } = string.Empty;
     public int Entrance { get; set; }

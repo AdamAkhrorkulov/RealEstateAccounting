@@ -3,6 +3,7 @@ namespace RealEstateAccounting.Application.DTOs;
 public class CustomerDto
 {
     public int Id { get; set; }
+    public int CompanyId { get; set; }  // Multi-tenancy
     public string FullName { get; set; } = string.Empty;
     public string PassportSeries { get; set; } = string.Empty;
     public string PassportNumber { get; set; } = string.Empty;

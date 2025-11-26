@@ -5,6 +5,7 @@ namespace RealEstateAccounting.Application.DTOs;
 public class ContractDto
 {
     public int Id { get; set; }
+    public int CompanyId { get; set; }  // Multi-tenancy
     public string ContractNumber { get; set; } = string.Empty;
     public DateTime ContractDate { get; set; }
     public int CustomerId { get; set; }
