@@ -12,13 +12,24 @@ namespace RealEstateAccounting.API.Controllers;
 public class PaymentsController : ControllerBase
 {
     private readonly IPaymentService _paymentService;
+    private readonly IContractService _contractService;
     private readonly ILogger<PaymentsController> _logger;
 
-    public PaymentsController(IPaymentService paymentService, ILogger<PaymentsController> logger)
+    public PaymentsController(IPaymentService paymentService, IContractService contractService, ILogger<PaymentsController> logger)
     {
         _paymentService = paymentService;
+        _contractService = contractService;
         _logger = logger;
     }
+
+    // Helper methods to get current user context
+    private string GetCurrentUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+    private int? GetCurrentAgentId() => int.TryParse(User.FindFirst("AgentId")?.Value, out var id) ? id : null;
+    private int? GetCurrentCustomerId() => int.TryParse(User.FindFirst("CustomerId")?.Value, out var id) ? id : null;
+    private bool IsAdmin() => User.IsInRole("Admin");
+    private bool IsAccountant() => User.IsInRole("Accountant");
+    private bool IsAgent() => User.IsInRole("Agent");
+    private bool IsCustomer() => User.IsInRole("Customer");
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PaymentDto>>> GetAll()
@@ -26,6 +37,35 @@ public class PaymentsController : ControllerBase
         try
         {
             var payments = await _paymentService.GetAllPaymentsAsync();
+
+            // Filter payments based on user role
+            if (IsAgent())
+            {
+                var agentId = GetCurrentAgentId();
+                if (!agentId.HasValue)
+                    return Forbid();
+
+                // Filter payments to only show those for contracts belonging to this agent
+                payments = payments.Where(p =>
+                {
+                    var contract = _contractService.GetContractByIdAsync(p.ContractId).Result;
+                    return contract.AgentId == agentId.Value;
+                }).ToList();
+            }
+            else if (IsCustomer())
+            {
+                var customerId = GetCurrentCustomerId();
+                if (!customerId.HasValue)
+                    return Forbid();
+
+                // Filter payments to only show those for contracts belonging to this customer
+                payments = payments.Where(p =>
+                {
+                    var contract = _contractService.GetContractByIdAsync(p.ContractId).Result;
+                    return contract.CustomerId == customerId.Value;
+                }).ToList();
+            }
+
             return Ok(payments);
         }
         catch (Exception ex)
@@ -41,6 +81,11 @@ public class PaymentsController : ControllerBase
         try
         {
             var payment = await _paymentService.GetPaymentByIdAsync(id);
+
+            // Verify user has permission to view this payment
+            if (!await CanAccessPayment(payment))
+                return Forbid();
+
             return Ok(payment);
         }
         catch (ArgumentException ex)
@@ -59,14 +104,54 @@ public class PaymentsController : ControllerBase
     {
         try
         {
+            // Verify user has permission to view this contract's payments
+            var contract = await _contractService.GetContractByIdAsync(contractId);
+            if (!await CanAccessContract(contract))
+                return Forbid();
+
             var payments = await _paymentService.GetPaymentsByContractAsync(contractId);
             return Ok(payments);
+        }
+        catch (ArgumentException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving payments for contract {ContractId}", contractId);
             return StatusCode(500, new { message = "An error occurred while retrieving payments" });
         }
+    }
+
+    // Helper method to check if current user can access a payment
+    private async Task<bool> CanAccessPayment(PaymentDto payment)
+    {
+        if (IsAdmin() || IsAccountant())
+            return true;
+
+        var contract = await _contractService.GetContractByIdAsync(payment.ContractId);
+        return await CanAccessContract(contract);
+    }
+
+    // Helper method to check if current user can access a contract
+    private async Task<bool> CanAccessContract(ContractDto contract)
+    {
+        if (IsAdmin() || IsAccountant())
+            return true;
+
+        if (IsAgent())
+        {
+            var agentId = GetCurrentAgentId();
+            return agentId.HasValue && contract.AgentId == agentId.Value;
+        }
+
+        if (IsCustomer())
+        {
+            var customerId = GetCurrentCustomerId();
+            return customerId.HasValue && contract.CustomerId == customerId.Value;
+        }
+
+        return false;
     }
 
     [HttpGet("report")]

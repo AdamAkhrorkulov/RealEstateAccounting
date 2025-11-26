@@ -21,7 +21,7 @@ public class JwtTokenService
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"] ?? throw new InvalidOperationException("JWT SecretKey not configured")));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claimsList = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Id),
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
@@ -30,10 +30,22 @@ public class JwtTokenService
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
+        // Add AgentId if user is an agent
+        if (user.AgentId.HasValue)
+        {
+            claimsList.Add(new Claim("AgentId", user.AgentId.Value.ToString()));
+        }
+
+        // Add CustomerId if user is a customer
+        if (user.CustomerId.HasValue)
+        {
+            claimsList.Add(new Claim("CustomerId", user.CustomerId.Value.ToString()));
+        }
+
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
-            claims: claims,
+            claims: claimsList,
             expires: DateTime.UtcNow.AddHours(Convert.ToDouble(_configuration["Jwt:ExpirationHours"] ?? "24")),
             signingCredentials: credentials
         );

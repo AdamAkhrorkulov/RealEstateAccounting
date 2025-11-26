@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RealEstateAccounting.Application.DTOs;
@@ -11,13 +12,21 @@ namespace RealEstateAccounting.API.Controllers;
 public class CustomersController : ControllerBase
 {
     private readonly ICustomerService _customerService;
+    private readonly IContractService _contractService;
     private readonly ILogger<CustomersController> _logger;
 
-    public CustomersController(ICustomerService customerService, ILogger<CustomersController> logger)
+    public CustomersController(ICustomerService customerService, IContractService contractService, ILogger<CustomersController> logger)
     {
         _customerService = customerService;
+        _contractService = contractService;
         _logger = logger;
     }
+
+    // Helper methods to get current user context
+    private int? GetCurrentAgentId() => int.TryParse(User.FindFirst("AgentId")?.Value, out var id) ? id : null;
+    private bool IsAdmin() => User.IsInRole("Admin");
+    private bool IsAccountant() => User.IsInRole("Accountant");
+    private bool IsAgent() => User.IsInRole("Agent");
 
     [HttpGet]
     [Authorize(Roles = "Admin,Accountant,Agent")]
@@ -26,6 +35,22 @@ public class CustomersController : ControllerBase
         try
         {
             var customers = await _customerService.GetAllCustomersAsync();
+
+            // Agents can only see customers from their own contracts
+            if (IsAgent())
+            {
+                var agentId = GetCurrentAgentId();
+                if (!agentId.HasValue)
+                    return Forbid();
+
+                // Get all contracts for this agent
+                var agentContracts = await _contractService.GetContractsByAgentAsync(agentId.Value);
+                var agentCustomerIds = agentContracts.Select(c => c.CustomerId).Distinct().ToList();
+
+                // Filter customers to only those in agent's contracts
+                customers = customers.Where(c => agentCustomerIds.Contains(c.Id)).ToList();
+            }
+
             return Ok(customers);
         }
         catch (Exception ex)

@@ -20,6 +20,7 @@ public class DashboardController : ControllerBase
     }
 
     [HttpGet("stats")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<DashboardDto>> GetDashboard()
     {
         try
@@ -35,6 +36,7 @@ public class DashboardController : ControllerBase
     }
 
     [HttpGet("trends")]
+    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<List<MonthlyRevenueDto>>> GetTrends([FromQuery] int months = 12)
     {
         try

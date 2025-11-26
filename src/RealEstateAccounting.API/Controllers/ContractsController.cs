@@ -20,13 +20,51 @@ public class ContractsController : ControllerBase
         _logger = logger;
     }
 
+    // Helper methods to get current user context
+    private string GetCurrentUserId() => User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
+    private string GetCurrentUserRole() => User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
+    private int? GetCurrentAgentId() => int.TryParse(User.FindFirst("AgentId")?.Value, out var id) ? id : null;
+    private int? GetCurrentCustomerId() => int.TryParse(User.FindFirst("CustomerId")?.Value, out var id) ? id : null;
+    private bool IsAdmin() => User.IsInRole("Admin");
+    private bool IsAccountant() => User.IsInRole("Accountant");
+    private bool IsAgent() => User.IsInRole("Agent");
+    private bool IsCustomer() => User.IsInRole("Customer");
+
     [HttpGet]
-    [Authorize(Roles = "Admin,Accountant")]
     public async Task<ActionResult<IEnumerable<ContractDto>>> GetAll()
     {
         try
         {
-            var contracts = await _contractService.GetAllContractsAsync();
+            IEnumerable<ContractDto> contracts;
+
+            if (IsAdmin() || IsAccountant())
+            {
+                // Admin and Accountant can see all contracts
+                contracts = await _contractService.GetAllContractsAsync();
+            }
+            else if (IsAgent())
+            {
+                // Agent can only see their own contracts
+                var agentId = GetCurrentAgentId();
+                if (!agentId.HasValue)
+                    return Forbid();
+
+                contracts = await _contractService.GetContractsByAgentAsync(agentId.Value);
+            }
+            else if (IsCustomer())
+            {
+                // Customer can only see their own contracts
+                var customerId = GetCurrentCustomerId();
+                if (!customerId.HasValue)
+                    return Forbid();
+
+                contracts = await _contractService.GetContractsByCustomerAsync(customerId.Value);
+            }
+            else
+            {
+                return Forbid();
+            }
+
             return Ok(contracts);
         }
         catch (Exception ex)
@@ -42,6 +80,11 @@ public class ContractsController : ControllerBase
         try
         {
             var contract = await _contractService.GetContractByIdAsync(id);
+
+            // Verify user has permission to view this contract
+            if (!await CanAccessContract(contract))
+                return Forbid();
+
             return Ok(contract);
         }
         catch (ArgumentException ex)
@@ -61,6 +104,11 @@ public class ContractsController : ControllerBase
         try
         {
             var contract = await _contractService.GetContractDetailsAsync(id);
+
+            // Verify user has permission to view this contract
+            if (!await CanAccessContractDetails(contract))
+                return Forbid();
+
             return Ok(contract);
         }
         catch (ArgumentException ex)
@@ -74,11 +122,66 @@ public class ContractsController : ControllerBase
         }
     }
 
+    // Helper method to check if current user can access a contract
+    private async Task<bool> CanAccessContract(ContractDto contract)
+    {
+        if (IsAdmin() || IsAccountant())
+            return true;
+
+        if (IsAgent())
+        {
+            var agentId = GetCurrentAgentId();
+            return agentId.HasValue && contract.AgentId == agentId.Value;
+        }
+
+        if (IsCustomer())
+        {
+            var customerId = GetCurrentCustomerId();
+            return customerId.HasValue && contract.CustomerId == customerId.Value;
+        }
+
+        return false;
+    }
+
+    // Helper method to check if current user can access contract details
+    private async Task<bool> CanAccessContractDetails(ContractDetailsDto contract)
+    {
+        if (IsAdmin() || IsAccountant())
+            return true;
+
+        if (IsAgent())
+        {
+            var agentId = GetCurrentAgentId();
+            return agentId.HasValue && contract.AgentId == agentId.Value;
+        }
+
+        if (IsCustomer())
+        {
+            var customerId = GetCurrentCustomerId();
+            return customerId.HasValue && contract.CustomerId == customerId.Value;
+        }
+
+        return false;
+    }
+
     [HttpGet("customer/{customerId}")]
     public async Task<ActionResult<IEnumerable<ContractDto>>> GetByCustomer(int customerId)
     {
         try
         {
+            // Customers can only query their own data
+            if (IsCustomer())
+            {
+                var currentCustomerId = GetCurrentCustomerId();
+                if (!currentCustomerId.HasValue || currentCustomerId.Value != customerId)
+                    return Forbid();
+            }
+            // Agents cannot access customer contracts directly
+            else if (IsAgent())
+            {
+                return Forbid();
+            }
+
             var contracts = await _contractService.GetContractsByCustomerAsync(customerId);
             return Ok(contracts);
         }
@@ -94,6 +197,19 @@ public class ContractsController : ControllerBase
     {
         try
         {
+            // Agents can only query their own data
+            if (IsAgent())
+            {
+                var currentAgentId = GetCurrentAgentId();
+                if (!currentAgentId.HasValue || currentAgentId.Value != agentId)
+                    return Forbid();
+            }
+            // Customers cannot access agent contracts
+            else if (IsCustomer())
+            {
+                return Forbid();
+            }
+
             var contracts = await _contractService.GetContractsByAgentAsync(agentId);
             return Ok(contracts);
         }
