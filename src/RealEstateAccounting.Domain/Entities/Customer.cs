@@ -2,6 +2,7 @@ namespace RealEstateAccounting.Domain.Entities;
 
 public class Customer : BaseEntity
 {
+    public int CompanyId { get; set; }  // Multi-tenancy: Each customer belongs to one company
     public string FullName { get; set; } = string.Empty;  // ФИО
     public string PassportSeries { get; set; } = string.Empty;  // Серия паспорта
     public string PassportNumber { get; set; } = string.Empty;  // Номер паспорта

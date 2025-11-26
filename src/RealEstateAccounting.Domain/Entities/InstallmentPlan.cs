@@ -2,6 +2,7 @@ namespace RealEstateAccounting.Domain.Entities;
 
 public class InstallmentPlan : BaseEntity
 {
+    public int CompanyId { get; set; }  // Multi-tenancy: Each installment plan belongs to one company
     public int ContractId { get; set; }
     public int MonthNumber { get; set; }  // Месяц по счету (1, 2, 3...)
     public DateTime DueDate { get; set; }  // Срок оплаты

@@ -4,6 +4,7 @@ namespace RealEstateAccounting.Domain.Entities;
 
 public class Contract : BaseEntity
 {
+    public int CompanyId { get; set; }  // Multi-tenancy: Each contract belongs to one company
     public string ContractNumber { get; set; } = string.Empty;  // № договора
     public DateTime ContractDate { get; set; }  // Дата договора
     public int DurationMonths { get; set; }  // Срок (месяцы)

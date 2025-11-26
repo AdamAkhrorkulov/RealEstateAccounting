@@ -4,6 +4,7 @@ namespace RealEstateAccounting.Domain.Entities;
 
 public class Payment : BaseEntity
 {
+    public int CompanyId { get; set; }  // Multi-tenancy: Each payment belongs to one company
     public int ContractId { get; set; }
     public int? InstallmentPlanId { get; set; }
     public decimal Amount { get; set; }

@@ -27,6 +27,7 @@ public class JwtTokenService
             new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
             new Claim(ClaimTypes.Name, user.FullName),
             new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim("CompanyId", user.CompanyId.ToString()),  // Multi-tenancy: Company isolation
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

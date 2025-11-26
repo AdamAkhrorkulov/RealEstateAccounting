@@ -4,6 +4,7 @@ namespace RealEstateAccounting.Domain.Entities;
 
 public class Apartment : BaseEntity
 {
+    public int CompanyId { get; set; }  // Multi-tenancy: Each apartment belongs to one company
     public string ApartmentNumber { get; set; } = string.Empty;
     public string Block { get; set; } = string.Empty;
     public int Entrance { get; set; }  // Подъезд
