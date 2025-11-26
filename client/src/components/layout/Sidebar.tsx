@@ -7,61 +7,45 @@ import {
   UserCheck,
   FileText,
   CreditCard,
-  Shield,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { UserRole } from '@/types';
 
 const Sidebar: React.FC = () => {
-  const { user, logout, hasRole } = useAuth();
+  const { user, logout } = useAuth();
 
   const navItems = [
     {
       name: 'Панель управления',
       icon: LayoutDashboard,
       path: '/',
-      roles: [UserRole.Admin, UserRole.Accountant, UserRole.Agent],
     },
     {
       name: 'Квартиры',
       icon: Building2,
       path: '/apartments',
-      roles: [UserRole.Admin, UserRole.Accountant, UserRole.Agent],
     },
     {
       name: 'Клиенты',
       icon: Users,
       path: '/customers',
-      roles: [UserRole.Admin, UserRole.Accountant, UserRole.Agent],
     },
     {
       name: 'Агенты',
       icon: UserCheck,
       path: '/agents',
-      roles: [UserRole.Admin, UserRole.Accountant],
-    },
-    {
-      name: 'Пользователи',
-      icon: Shield,
-      path: '/users',
-      roles: [UserRole.Admin],
     },
     {
       name: 'Договора',
       icon: FileText,
       path: '/contracts',
-      roles: [UserRole.Admin, UserRole.Accountant, UserRole.Agent, UserRole.Customer],
     },
     {
       name: 'Платежи',
       icon: CreditCard,
       path: '/payments',
-      roles: [UserRole.Admin, UserRole.Accountant, UserRole.Agent, UserRole.Customer],
     },
   ];
-
-  const filteredNavItems = navItems.filter((item) => hasRole(item.roles));
 
   return (
     <div className="w-56 bg-white border-r border-gray-200 h-screen flex flex-col overflow-hidden">
@@ -72,7 +56,7 @@ const Sidebar: React.FC = () => {
 
       {/* Navigation */}
       <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
-        {filteredNavItems.map((item) => (
+        {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}

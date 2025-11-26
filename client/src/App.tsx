@@ -3,8 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './components/layout/Layout';
 import Login from './pages/Login';
-import Register from './pages/Register';
-import Users from './pages/Users';
 import Dashboard from './pages/Dashboard';
 import Apartments from './pages/Apartments';
 import Customers from './pages/Customers';
@@ -80,22 +78,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/users"
-        element={
-          <ProtectedRoute>
-            <Users />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <ProtectedRoute>
-            <Register />
           </ProtectedRoute>
         }
       />

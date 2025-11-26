@@ -1,9 +1,6 @@
 // Enums
 export enum UserRole {
   Admin = 1,
-  Accountant = 2,
-  Agent = 3,
-  Customer = 4,
 }
 
 export enum ApartmentStatus {
@@ -35,9 +32,6 @@ export interface RegisterDto {
   password: string;
   fullName: string;
   phoneNumber: string;
-  role: UserRole;
-  agentId?: number;
-  customerId?: number;
 }
 
 export interface AuthResponse {
@@ -54,8 +48,6 @@ export interface UserDto {
   fullName: string;
   phoneNumber: string;
   role: UserRole;
-  agentId?: number;
-  customerId?: number;
   isActive: boolean;
 }
 
