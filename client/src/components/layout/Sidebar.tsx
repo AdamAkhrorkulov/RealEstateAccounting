@@ -7,6 +7,7 @@ import {
   UserCheck,
   FileText,
   CreditCard,
+  Shield,
   LogOut,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,6 +40,12 @@ const Sidebar: React.FC = () => {
       icon: UserCheck,
       path: '/agents',
       roles: [UserRole.Admin, UserRole.Accountant],
+    },
+    {
+      name: 'Пользователи',
+      icon: Shield,
+      path: '/users',
+      roles: [UserRole.Admin],
     },
     {
       name: 'Договора',
